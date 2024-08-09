@@ -252,7 +252,6 @@
       <code><![CDATA[$vevent->DTEND]]></code>
     </LessSpecificReturnStatement>
     <UndefinedInterfaceMethod>
-      <code><![CDATA[get]]></code>
       <code><![CDATA[getChildren]]></code>
     </UndefinedInterfaceMethod>
     <UndefinedMethod>
@@ -2455,11 +2454,6 @@
       <code><![CDATA[$sessionCallback]]></code>
     </InvalidPropertyAssignmentValue>
   </file>
-  <file src="lib/private/Log.php">
-    <RedundantCondition>
-      <code><![CDATA[$request]]></code>
-    </RedundantCondition>
-  </file>
   <file src="lib/private/Log/File.php">
     <TypeDoesNotContainNull>
       <code><![CDATA[$limit === null]]></code>
@@ -2587,19 +2581,6 @@
     <NullableReturnStatement>
       <code><![CDATA[$this->collectionName]]></code>
     </NullableReturnStatement>
-  </file>
-  <file src="lib/private/Search.php">
-    <RedundantCondition>
-      <code><![CDATA[$provider instanceof Provider]]></code>
-    </RedundantCondition>
-  </file>
-  <file src="lib/private/Search/Result/File.php">
-    <InvalidPropertyAssignmentValue>
-      <code><![CDATA[$data->getId()]]></code>
-      <code><![CDATA[$data->getMtime()]]></code>
-      <code><![CDATA[$data->getPermissions()]]></code>
-      <code><![CDATA[$this->hasPreview($data)]]></code>
-    </InvalidPropertyAssignmentValue>
   </file>
   <file src="lib/private/Security/Bruteforce/Throttler.php">
     <NullArgument>

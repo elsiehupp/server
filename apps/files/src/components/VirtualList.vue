@@ -9,6 +9,10 @@
 			<slot name="before" />
 		</div>
 
+		<div class="files-list__filters">
+			<slot name="filters" />
+		</div>
+
 		<div v-if="!!$scopedSlots['header-overlay']" class="files-list__thead-overlay">
 			<slot name="header-overlay" />
 		</div>
@@ -55,7 +59,7 @@ import debounce from 'debounce'
 import Vue from 'vue'
 
 import filesListWidthMixin from '../mixins/filesListWidth.ts'
-import logger from '../logger.js'
+import logger from '../logger.ts'
 
 interface RecycledPoolItem {
 	key: string,
@@ -131,13 +135,13 @@ export default Vue.extend({
 
 		itemHeight() {
 			// Align with css in FilesListVirtual
-			// 208px + 32px (name) + 16px (mtime) + 16px (padding) + 22px (grid gap)
-			return this.gridMode ? (208 + 32 + 16 + 16 + 22) : 55
+			// 166px + 32px (name) + 16px (mtime) + 16px (padding)
+			return this.gridMode ? (166 + 32 + 16 + 16) : 55
 		},
 		// Grid mode only
 		itemWidth() {
-			// 208px + 16px padding + 22px grid gap
-			return 208 + 16 + 22
+			// 166px + 16px padding
+			return 166 + 16
 		},
 
 		rowCount() {

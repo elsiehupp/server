@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import type { ComponentPublicInstance, PropType } from 'vue'
+import type { PropType } from 'vue'
 import type { FileSource } from '../types.ts'
 
 import { showError } from '@nextcloud/dialogs'
-import { FileType, Permission, Folder, File as NcFile, NodeStatus, Node } from '@nextcloud/files'
+import { FileType, Permission, Folder, File as NcFile, NodeStatus, Node, getFileActions } from '@nextcloud/files'
 import { translate as t } from '@nextcloud/l10n'
 import { generateUrl } from '@nextcloud/router'
 import { vOnClickOutside } from '@vueuse/components'
@@ -18,10 +18,11 @@ import { action as sidebarAction } from '../actions/sidebarAction.ts'
 import { getDragAndDropPreview } from '../utils/dragUtils.ts'
 import { hashCode } from '../utils/hashUtils.ts'
 import { dataTransferToFileTree, onDropExternalFiles, onDropInternalFiles } from '../services/DropService.ts'
-import logger from '../logger.js'
-import FileEntryActions from '../components/FileEntry/FileEntryActions.vue'
+import logger from '../logger.ts'
 
 Vue.directive('onClickOutside', vOnClickOutside)
+
+const actions = getFileActions()
 
 export default defineComponent({
 	props: {
@@ -47,6 +48,13 @@ export default defineComponent({
 		},
 	},
 
+	provide() {
+		return {
+			defaultFileAction: this.defaultFileAction,
+			enabledFileActions: this.enabledFileActions,
+		}
+	},
+
 	data() {
 		return {
 			loading: '',
@@ -56,17 +64,10 @@ export default defineComponent({
 	},
 
 	computed: {
-		currentDir() {
-			// Remove any trailing slash but leave root slash
-			return (this.$route.query?.dir?.toString() || '/').replace(/^(.+)\/$/, '$1')
-		},
-		currentFileId() {
-			return this.$route.params?.fileid || this.$route.query?.fileid || null
-		},
-
 		fileid() {
 			return this.source.fileid ?? 0
 		},
+
 		uniqueId() {
 			return hashCode(this.source.source)
 		},
@@ -74,19 +75,31 @@ export default defineComponent({
 			return this.source.status === NodeStatus.LOADING
 		},
 
-		extension() {
-			if (this.source.attributes?.displayname) {
-				return extname(this.source.attributes.displayname)
-			}
-			return this.source.extension || ''
-		},
+		/**
+		 * The display name of the current node
+		 * Either the nodes filename or a custom display name (e.g. for shares)
+		 */
 		displayName() {
-			const ext = this.extension
-			const name = String(this.source.attributes.displayname
-				|| this.source.basename)
+			return this.source.displayname
+		},
+		/**
+		 * The display name without extension
+		 */
+		basename() {
+			if (this.extension === '') {
+				return this.displayName
+			}
+			return this.displayName.slice(0, 0 - this.extension.length)
+		},
+		/**
+		 * The extension of the file
+		 */
+		extension() {
+			if (this.source.type === FileType.Folder) {
+				return ''
+			}
 
-			// Strip extension from name if defined
-			return !ext ? name : name.slice(0, 0 - ext.length)
+			return extname(this.displayName)
 		},
 
 		draggingFiles() {
@@ -173,6 +186,23 @@ export default defineComponent({
 				color: `color-mix(in srgb, var(--color-main-text) ${ratio}%, var(--color-text-maxcontrast))`,
 			}
 		},
+
+		/**
+		 * Sorted actions that are enabled for this node
+		 */
+		enabledFileActions() {
+			if (this.source.status === NodeStatus.FAILED) {
+				return []
+			}
+
+			return actions
+				.filter(action => !action.enabled || action.enabled([this.source], this.currentView))
+				.sort((a, b) => (a.order || 0) - (b.order || 0))
+		},
+
+		defaultFileAction() {
+			return this.enabledFileActions.find((action) => action.default !== undefined)
+		},
 	},
 
 	watch: {
@@ -256,8 +286,15 @@ export default defineComponent({
 				return false
 			}
 
-			const actions = this.$refs.actions as ComponentPublicInstance<typeof FileEntryActions>
-			actions.execDefaultAction(event)
+			if (this.defaultFileAction) {
+				event.preventDefault()
+				event.stopPropagation()
+				// Execute the first default action if any
+				this.defaultFileAction.exec(this.source, this.currentView, this.currentDir)
+			} else {
+				// fallback to open in current tab
+				window.open(generateUrl('/f/{fileId}', { fileId: this.fileid }), '_self')
+			}
 		},
 
 		openDetailsIfAvailable(event) {

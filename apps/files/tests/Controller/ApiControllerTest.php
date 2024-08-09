@@ -14,15 +14,18 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\Files\File;
 use OCP\Files\Folder;
+use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
 use OCP\Files\SimpleFS\ISimpleFile;
 use OCP\Files\StorageNotAvailableException;
 use OCP\IConfig;
+use OCP\IL10N;
 use OCP\IPreview;
 use OCP\IRequest;
 use OCP\IUser;
 use OCP\IUserSession;
 use OCP\Share\IManager;
+use Psr\Log\LoggerInterface;
 use Test\TestCase;
 
 /**
@@ -53,6 +56,12 @@ class ApiControllerTest extends TestCase {
 	private $userConfig;
 	/** @var ViewConfig|\PHPUnit\Framework\MockObject\MockObject */
 	private $viewConfig;
+	/** @var IL10N|\PHPUnit\Framework\MockObject\MockObject */
+	private $l10n;
+	/** @var IRootFolder|\PHPUnit\Framework\MockObject\MockObject */
+	private $rootFolder;
+	/** @var LoggerInterface|\PHPUnit\Framework\MockObject\MockObject */
+	private $logger;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -83,6 +92,9 @@ class ApiControllerTest extends TestCase {
 			->getMock();
 		$this->userConfig = $this->createMock(UserConfig::class);
 		$this->viewConfig = $this->createMock(ViewConfig::class);
+		$this->l10n = $this->createMock(IL10N::class);
+		$this->rootFolder = $this->createMock(IRootFolder::class);
+		$this->logger = $this->createMock(LoggerInterface::class);
 
 		$this->apiController = new ApiController(
 			$this->appName,
@@ -94,7 +106,10 @@ class ApiControllerTest extends TestCase {
 			$this->config,
 			$this->userFolder,
 			$this->userConfig,
-			$this->viewConfig
+			$this->viewConfig,
+			$this->l10n,
+			$this->rootFolder,
+			$this->logger,
 		);
 	}
 
@@ -157,6 +172,7 @@ class ApiControllerTest extends TestCase {
 
 	public function testGetThumbnailInvalidImage() {
 		$file = $this->createMock(File::class);
+		$file->method('getId')->willReturn(123);
 		$this->userFolder->method('get')
 			->with($this->equalTo('unknown.jpg'))
 			->willReturn($file);
@@ -168,8 +184,19 @@ class ApiControllerTest extends TestCase {
 		$this->assertEquals($expected, $this->apiController->getThumbnail(10, 10, 'unknown.jpg'));
 	}
 
+	public function testGetThumbnailInvalidPartFile() {
+		$file = $this->createMock(File::class);
+		$file->method('getId')->willReturn(0);
+		$this->userFolder->method('get')
+			->with($this->equalTo('unknown.jpg'))
+			->willReturn($file);
+		$expected = new DataResponse(['message' => 'File not found.'], Http::STATUS_NOT_FOUND);
+		$this->assertEquals($expected, $this->apiController->getThumbnail(10, 10, 'unknown.jpg'));
+	}
+
 	public function testGetThumbnail() {
 		$file = $this->createMock(File::class);
+		$file->method('getId')->willReturn(123);
 		$this->userFolder->method('get')
 			->with($this->equalTo('known.jpg'))
 			->willReturn($file);

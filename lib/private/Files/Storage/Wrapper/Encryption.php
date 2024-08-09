@@ -469,7 +469,7 @@ class Encryption extends Wrapper {
 
 
 	/**
-	 * perform some plausibility checks if the the unencrypted size is correct.
+	 * perform some plausibility checks if the unencrypted size is correct.
 	 * If not, we calculate the correct unencrypted size and return it
 	 *
 	 * @param string $path internal path relative to the storage root
@@ -777,7 +777,7 @@ class Encryption extends Wrapper {
 		// first copy the keys that we reuse the existing file key on the target location
 		// and don't create a new one which would break versions for example.
 		$mount = $this->mountManager->findByStorageId($sourceStorage->getId());
-		if (count($mount) === 1) {
+		if (count($mount) >= 1) {
 			$mountPoint = $mount[0]->getMountPoint();
 			$source = $mountPoint . '/' . $sourceInternalPath;
 			$target = $this->getFullPath($targetInternalPath);

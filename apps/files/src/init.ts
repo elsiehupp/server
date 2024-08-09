@@ -14,6 +14,11 @@ import { action as openInFilesAction } from './actions/openInFilesAction'
 import { action as renameAction } from './actions/renameAction'
 import { action as sidebarAction } from './actions/sidebarAction'
 import { action as viewInFolderAction } from './actions/viewInFolderAction'
+
+import { registerHiddenFilesFilter } from './filters/HiddenFilesFilter.ts'
+import { registerTypeFilter } from './filters/TypeFilter.ts'
+import { registerModifiedFilter } from './filters/ModifiedFilter.ts'
+
 import { entry as newFolderEntry } from './newMenu/newFolder.ts'
 import { entry as newTemplatesFolder } from './newMenu/newTemplatesFolder.ts'
 import { registerTemplateEntries } from './newMenu/newFromTemplate.ts'
@@ -22,6 +27,7 @@ import registerFavoritesView from './views/favorites'
 import registerRecentView from './views/recent'
 import registerPersonalFilesView from './views/personal-files'
 import registerFilesView from './views/files'
+import { registerFolderTreeView } from './views/folderTree.ts'
 import registerPreviewServiceWorker from './services/ServiceWorker.js'
 
 import { initLivePhotos } from './services/LivePhotos'
@@ -48,6 +54,12 @@ registerFavoritesView()
 registerFilesView()
 registerRecentView()
 registerPersonalFilesView()
+registerFolderTreeView()
+
+// Register file list filters
+registerHiddenFilesFilter()
+registerTypeFilter()
+registerModifiedFilter()
 
 // Register preview service worker
 registerPreviewServiceWorker()

@@ -38,6 +38,7 @@ OC.L10N.register(
     "%s (restricted)" : "%s (takmarkaður aðgangur)",
     "%s (invisible)" : "%s (ósýnilegt)",
     "<strong>System tags</strong> for a file have been modified" : "<strong>Kerfismerkjum</strong> á skrá hefur verið breytt",
+    "Files" : "Skráaforrit",
     "Tags" : "Merki",
     "All tagged %s …" : "Allt merkt %s …",
     "tagged %s" : "merkt %s",
@@ -69,8 +70,6 @@ OC.L10N.register(
     "Failed to load selected tags" : "Mistókst að hlaða inn völdum merkjum",
     "Failed to select tag" : "Ekki tókst að velja merki",
     "Collaborative tags are available for all users. Restricted tags are visible to users but cannot be assigned by them. Invisible tags are for internal use, since users cannot see or assign them." : "Samstarfsmerkingar eru tiltækar öllum notendum. Takmörkuð merki sjá allir notendur en þeir geta ekki úthlutað þeim. Ósýnileg merki eru fyrir notkun innan kerfis, þar sem notendur munu ekki sjá þau eða getað úthlutað þeim.",
-    "This file has the tag {tag}" : "Þessi skrá er með merkið {tag}",
-    "This file has the tags {firstTags} and {lastTag}" : "Þessi skrá er með merkin {firstTags} og {lastTag}",
     "List of tags and their associated files and folders." : "Listi yfir merki og þeim tengdar skrár og möppur.",
     "No tags found" : "Engin merki fundust",
     "Tags you have created will show up here." : "Merki sem þú hefur útbúið munu birtast hér.",
@@ -92,6 +91,8 @@ OC.L10N.register(
     "No files in here" : "Engar skrár hér",
     "No entries found in this folder" : "Engar skrár fundust í þessari möppu",
     "Size" : "Stærð",
-    "Modified" : "Breytt"
+    "Modified" : "Breytt",
+    "This file has the tag {tag}" : "Þessi skrá er með merkið {tag}",
+    "This file has the tags {firstTags} and {lastTag}" : "Þessi skrá er með merkin {firstTags} og {lastTag}"
 },
 "nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);");

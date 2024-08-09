@@ -2,13 +2,13 @@
  * SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-import type { ContentsWithRoot } from '@nextcloud/files'
+import type { ContentsWithRoot, File, Folder } from '@nextcloud/files'
 import type { FileStat, ResponseDataDetailed } from 'webdav'
 
 import { CancelablePromise } from 'cancelable-promise'
-import { File, Folder, davGetDefaultPropfind, davResultToNode, davRootPath } from '@nextcloud/files'
+import { davGetDefaultPropfind, davResultToNode, davRootPath } from '@nextcloud/files'
 import { client } from './WebdavClient.ts'
-import logger from '../logger.js'
+import logger from '../logger.ts'
 
 /**
  * Slim wrapper over `@nextcloud/files` `davResultToNode` to allow using the function with `Array.map`

@@ -155,6 +155,7 @@ OC.L10N.register(
     "Profile information" : "Profilinformációk",
     "Profile picture, full name, email, phone number, address, website, Twitter, organisation, role, headline, biography, and whether your profile is enabled" : "Profilkép, teljes név, e-mail-cím, telefonszám, cím, weboldal, Twitter-fiók, szervezet, szerepkör, címsor, életrajz és hogy engedélyezett-e",
     "Nextcloud settings" : "Nextcloud beállítások",
+    "Task:" : "Feladat:",
     "Machine translation" : "Gépi fordítás",
     "Machine translation can be implemented by different apps. Here you can define the precedence of the machine translation apps you have installed at the moment." : "A gépi fordítást különböző alkalmazások is megvalósíthatják. Itt állítható be a jelenleg telepített gépi fordítóalkalmazások elsőbbsége.",
     "Speech-To-Text" : "Beszédfelismerés",
@@ -163,7 +164,6 @@ OC.L10N.register(
     "Image generation" : "Képelőállítás",
     "Text processing" : "Szövegfeldolgozás",
     "Text processing tasks can be implemented by different apps. Here you can set which app should be used for which task." : "A szövegfeldolgozás különböző alkalmazásokkal is megvalósítható. Itt állítható be, hogy melyik alkalmazás legyen használva.",
-    "Task:" : "Feladat:",
     "None of your currently installed apps provide Text processing functionality" : "Egyik jelenleg telepített alkalmazás sem támogatja a szövegfeldolgozás funkciót",
     "Here you can decide which group can access certain sections of the administration settings." : "Itt eldöntheti, hogy mely csoportok érhetik el a rendszergazdai beállítások bizonyos szakaszait.",
     "None" : "Egyik sem",
@@ -473,6 +473,7 @@ OC.L10N.register(
     "Account documentation" : "Fiók dokumentációja",
     "Administration documentation" : "Rengszergazdai dokumentáció",
     "Forum" : "Fórum",
+    "Nextcloud help & privacy resources" : "Nextcloud súgó és adatvédelmi erőforrások",
     "General documentation" : "Általános dokumentáció",
     "Legal notice" : "Jogi nyilatkozat",
     "Privacy policy" : "Adatvédelmi irányelvek",
@@ -639,6 +640,7 @@ OC.L10N.register(
     "User management settings" : "Felhasználókezelő beállításai",
     "Send welcome email to new users" : "Üdvözlő e-mail küldése az új felhasználóknak",
     "Creating group …" : "Csoport létrehozása…",
-    "Nextcloud help resources" : "Nextcloud súgóerőforrások"
+    "Nextcloud help resources" : "Nextcloud súgóerőforrások",
+    "Active accounts" : "Aktív fiókok"
 },
 "nplurals=2; plural=(n != 1);");

@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace OCP\Collaboration\Reference;
 
 use Fusonic\OpenGraph\Consumer;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\LimitStream;
 use GuzzleHttp\Psr7\Utils;
 use OC\Security\RateLimiting\Exception\RateLimitExceededException;
@@ -26,7 +25,7 @@ use Psr\Log\LoggerInterface;
 /**
  * @since 29.0.0
  */
-class LinkReferenceProvider implements IReferenceProvider {
+class LinkReferenceProvider implements IReferenceProvider, IPublicReferenceProvider {
 
 	/**
 	 * for image size and webpage header
@@ -85,6 +84,14 @@ class LinkReferenceProvider implements IReferenceProvider {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 30.0.0
+	 */
+	public function resolveReferencePublic(string $referenceText, string $sharingToken): ?IReference {
+		return $this->resolveReference($referenceText);
 	}
 
 	/**
@@ -178,10 +185,8 @@ class LinkReferenceProvider implements IReferenceProvider {
 					$folder->newFile(md5($reference->getId()), $bodyStream->getContents());
 					$reference->setImageUrl($this->urlGenerator->linkToRouteAbsolute('core.Reference.preview', ['referenceId' => md5($reference->getId())]));
 				}
-			} catch (GuzzleException $e) {
-				$this->logger->info('Failed to fetch and store the open graph image for ' . $reference->getId(), ['exception' => $e]);
-			} catch (\Throwable $e) {
-				$this->logger->error('Failed to fetch and store the open graph image for ' . $reference->getId(), ['exception' => $e]);
+			} catch (\Exception $e) {
+				$this->logger->debug('Failed to fetch and store the open graph image for ' . $reference->getId(), ['exception' => $e]);
 			}
 		}
 	}
@@ -199,6 +204,14 @@ class LinkReferenceProvider implements IReferenceProvider {
 	 * @since 29.0.0
 	 */
 	public function getCacheKey(string $referenceId): ?string {
+		return null;
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 30.0.0
+	 */
+	public function getCacheKeyPublic(string $referenceId, string $sharingToken): ?string {
 		return null;
 	}
 }

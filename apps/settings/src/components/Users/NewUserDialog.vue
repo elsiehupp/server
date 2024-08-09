@@ -61,7 +61,7 @@
 				:required="newUser.password === '' || settings.newUserRequireEmail" />
 			<div class="dialog__item">
 				<NcSelect class="dialog__select"
-					:input-label="!settings.isAdmin ? t('settings', 'Member of the following groups (required)') : t('settings', 'Member of the following groups')"
+					:input-label="!settings.isAdmin && !settings.isDelegatedAdmin ? t('settings', 'Member of the following groups (required)') : t('settings', 'Member of the following groups')"
 					:placeholder="t('settings', 'Set account groups')"
 					:disabled="loading.groups || loading.all"
 					:options="canAddGroups"
@@ -70,7 +70,7 @@
 					:close-on-select="false"
 					:multiple="true"
 					:taggable="true"
-					:required="!settings.isAdmin"
+					:required="!settings.isAdmin && !settings.isDelegatedAdmin"
 					@input="handleGroupInput"
 					@option:created="createGroup" />
 					<!-- If user is not admin, he is a subadmin.
@@ -100,7 +100,7 @@
 			</div>
 			<div v-if="showConfig.showLanguages"
 				class="dialog__item">
-				<NcSelect	v-model="newUser.language"
+				<NcSelect v-model="newUser.language"
 					class="dialog__select"
 					:input-label="t('settings', 'Language')"
 					:placeholder="t('settings', 'Set default language')"

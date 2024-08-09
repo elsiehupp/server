@@ -38,6 +38,7 @@ OC.L10N.register(
     "%s (restricted)" : "%s (restringido)",
     "%s (invisible)" : "%s (invisible) ",
     "<strong>System tags</strong> for a file have been modified" : "Las <strong>etiquetas del sistema</strong> para un archivo han sido modificadas",
+    "Files" : "Archivo",
     "Tags" : "Etiquetas",
     "All tagged %s …" : "Todos los etiquetados %s …",
     "tagged %s" : "etiquetado %s",
@@ -69,8 +70,6 @@ OC.L10N.register(
     "Failed to load tags" : "No se pudieron cargar las etiquetas",
     "Failed to load selected tags" : "No se pudieron cargar las etiquetas seleccionadas",
     "Failed to select tag" : "No se pudieron seleccionar las etiquetas",
-    "This file has the tag {tag}" : "Este archivo tiene la etiqueta {tag}",
-    "This file has the tags {firstTags} and {lastTag}" : "Este archivo tiene las etiquetas {firstTags} y {lastTag}",
     "List of tags and their associated files and folders." : "Lista de etiquetas y sus archivos y carpetas asociados.",
     "No tags found" : "No se encontraron etiquetas",
     "Tags you have created will show up here." : "Las etiquetas que haya creado aparecerán aquí.",
@@ -92,6 +91,8 @@ OC.L10N.register(
     "No files in here" : "No hay archivos aquí",
     "No entries found in this folder" : "No se encontraron elementos en esta carpeta",
     "Size" : "Tamaño",
-    "Modified" : "Modificado"
+    "Modified" : "Modificado",
+    "This file has the tag {tag}" : "Este archivo tiene la etiqueta {tag}",
+    "This file has the tags {firstTags} and {lastTag}" : "Este archivo tiene las etiquetas {firstTags} y {lastTag}"
 },
 "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

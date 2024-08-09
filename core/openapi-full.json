@@ -496,8 +496,7 @@
                 "required": [
                     "name",
                     "description",
-                    "type",
-                    "mandatory"
+                    "type"
                 ],
                 "properties": {
                     "name": {
@@ -515,6 +514,7 @@
                             "Image",
                             "Video",
                             "File",
+                            "Enum",
                             "ListOfNumbers",
                             "ListOfTexts",
                             "ListOfImages",
@@ -522,9 +522,6 @@
                             "ListOfVideos",
                             "ListOfFiles"
                         ]
-                    },
-                    "mandatory": {
-                        "type": "boolean"
                     }
                 }
             },
@@ -602,7 +599,15 @@
                     "name",
                     "description",
                     "inputShape",
-                    "outputShape"
+                    "inputShapeEnumValues",
+                    "inputShapeDefaults",
+                    "optionalInputShape",
+                    "optionalInputShapeEnumValues",
+                    "optionalInputShapeDefaults",
+                    "outputShape",
+                    "outputShapeEnumValues",
+                    "optionalOutputShape",
+                    "optionalOutputShapeEnumValues"
                 ],
                 "properties": {
                     "name": {
@@ -617,10 +622,132 @@
                             "$ref": "#/components/schemas/TaskProcessingShape"
                         }
                     },
+                    "inputShapeEnumValues": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "inputShapeDefaults": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "oneOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
+                    "optionalInputShape": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TaskProcessingShape"
+                        }
+                    },
+                    "optionalInputShapeEnumValues": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "optionalInputShapeDefaults": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "oneOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        }
+                    },
                     "outputShape": {
                         "type": "array",
                         "items": {
                             "$ref": "#/components/schemas/TaskProcessingShape"
+                        }
+                    },
+                    "outputShapeEnumValues": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "optionalOutputShape": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TaskProcessingShape"
+                        }
+                    },
+                    "optionalOutputShapeEnumValues": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "value": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -3059,6 +3186,115 @@
                 }
             }
         },
+        "/ocs/v2.php/references/extractPublic": {
+            "post": {
+                "operationId": "reference_api-extract-public",
+                "summary": "Extract references from a text",
+                "tags": [
+                    "reference_api"
+                ],
+                "security": [
+                    {},
+                    {
+                        "bearer_auth": []
+                    },
+                    {
+                        "basic_auth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "text",
+                                    "sharingToken"
+                                ],
+                                "properties": {
+                                    "text": {
+                                        "type": "string",
+                                        "description": "Text to extract from"
+                                    },
+                                    "sharingToken": {
+                                        "type": "string",
+                                        "description": "Token of the public share"
+                                    },
+                                    "resolve": {
+                                        "type": "boolean",
+                                        "default": false,
+                                        "description": "Resolve the references"
+                                    },
+                                    "limit": {
+                                        "type": "integer",
+                                        "format": "int64",
+                                        "default": 1,
+                                        "description": "Maximum amount of references to extract, limited to 15"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "OCS-APIRequest",
+                        "in": "header",
+                        "description": "Required to be true for the API request to pass",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "References returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "ocs"
+                                    ],
+                                    "properties": {
+                                        "ocs": {
+                                            "type": "object",
+                                            "required": [
+                                                "meta",
+                                                "data"
+                                            ],
+                                            "properties": {
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/OCSMeta"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "references"
+                                                    ],
+                                                    "properties": {
+                                                        "references": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "$ref": "#/components/schemas/Reference",
+                                                                "nullable": true
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/ocs/v2.php/references/resolve": {
             "get": {
                 "operationId": "reference_api-resolve-one",
@@ -3186,6 +3422,209 @@
                                         "format": "int64",
                                         "default": 1,
                                         "description": "Maximum amount of references to resolve"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "OCS-APIRequest",
+                        "in": "header",
+                        "description": "Required to be true for the API request to pass",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "References returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "ocs"
+                                    ],
+                                    "properties": {
+                                        "ocs": {
+                                            "type": "object",
+                                            "required": [
+                                                "meta",
+                                                "data"
+                                            ],
+                                            "properties": {
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/OCSMeta"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "references"
+                                                    ],
+                                                    "properties": {
+                                                        "references": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "$ref": "#/components/schemas/Reference",
+                                                                "nullable": true
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ocs/v2.php/references/resolvePublic": {
+            "get": {
+                "operationId": "reference_api-resolve-one-public",
+                "summary": "Resolve from a public page",
+                "tags": [
+                    "reference_api"
+                ],
+                "security": [
+                    {},
+                    {
+                        "bearer_auth": []
+                    },
+                    {
+                        "basic_auth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "reference",
+                                    "sharingToken"
+                                ],
+                                "properties": {
+                                    "reference": {
+                                        "type": "string",
+                                        "description": "Reference to resolve"
+                                    },
+                                    "sharingToken": {
+                                        "type": "string",
+                                        "description": "Token of the public share"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "OCS-APIRequest",
+                        "in": "header",
+                        "description": "Required to be true for the API request to pass",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reference returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "ocs"
+                                    ],
+                                    "properties": {
+                                        "ocs": {
+                                            "type": "object",
+                                            "required": [
+                                                "meta",
+                                                "data"
+                                            ],
+                                            "properties": {
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/OCSMeta"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "references"
+                                                    ],
+                                                    "properties": {
+                                                        "references": {
+                                                            "type": "object",
+                                                            "additionalProperties": {
+                                                                "$ref": "#/components/schemas/Reference",
+                                                                "nullable": true
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "reference_api-resolve-public",
+                "summary": "Resolve multiple references from a public page",
+                "tags": [
+                    "reference_api"
+                ],
+                "security": [
+                    {},
+                    {
+                        "bearer_auth": []
+                    },
+                    {
+                        "basic_auth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "references",
+                                    "sharingToken"
+                                ],
+                                "properties": {
+                                    "references": {
+                                        "type": "array",
+                                        "description": "References to resolve",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "sharingToken": {
+                                        "type": "string",
+                                        "description": "Token of the public share"
+                                    },
+                                    "limit": {
+                                        "type": "integer",
+                                        "format": "int64",
+                                        "default": 1,
+                                        "description": "Maximum amount of references to resolve, limited to 15"
                                     }
                                 }
                             }
@@ -3530,6 +3969,16 @@
                                         "type": "string",
                                         "default": "",
                                         "description": "An arbitrary identifier for the task"
+                                    },
+                                    "webhookUri": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "description": "URI to be requested when the task finishes"
+                                    },
+                                    "webhookMethod": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "description": "Method used for the webhook request (HTTP:GET, HTTP:POST, HTTP:PUT, HTTP:DELETE or AppAPI:APP_ID:GET, AppAPI:APP_ID:POST...)"
                                     }
                                 }
                             }
@@ -7282,6 +7731,52 @@
                 }
             }
         },
+        "/index.php/csrftoken": {
+            "get": {
+                "operationId": "csrf_token-index",
+                "summary": "Returns a new CSRF token.",
+                "tags": [
+                    "csrf_token"
+                ],
+                "security": [
+                    {},
+                    {
+                        "bearer_auth": []
+                    },
+                    {
+                        "basic_auth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "CSRF token returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "token"
+                                    ],
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Strict cookie check failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/index.php/login/v2/poll": {
             "post": {
                 "operationId": "client_flow_login_v2-poll",
@@ -8285,6 +8780,201 @@
                 }
             }
         },
+        "/ocs/v2.php/taskprocessing/tasks_provider/{taskId}/file": {
+            "post": {
+                "operationId": "task_processing_api-set-file-contents-ex-app",
+                "summary": "Upload a file so it can be referenced in a task result (ExApp route version)",
+                "description": "Use field 'file' for the file upload\nThis endpoint requires admin access",
+                "tags": [
+                    "task_processing_api"
+                ],
+                "security": [
+                    {
+                        "bearer_auth": []
+                    },
+                    {
+                        "basic_auth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "taskId",
+                        "in": "path",
+                        "description": "The id of the task",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "OCS-APIRequest",
+                        "in": "header",
+                        "description": "Required to be true for the API request to pass",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "File created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "ocs"
+                                    ],
+                                    "properties": {
+                                        "ocs": {
+                                            "type": "object",
+                                            "required": [
+                                                "meta",
+                                                "data"
+                                            ],
+                                            "properties": {
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/OCSMeta"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "fileId"
+                                                    ],
+                                                    "properties": {
+                                                        "fileId": {
+                                                            "type": "integer",
+                                                            "format": "int64"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "File upload failed or no file was uploaded",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "ocs"
+                                    ],
+                                    "properties": {
+                                        "ocs": {
+                                            "type": "object",
+                                            "required": [
+                                                "meta",
+                                                "data"
+                                            ],
+                                            "properties": {
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/OCSMeta"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "message"
+                                                    ],
+                                                    "properties": {
+                                                        "message": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "ocs"
+                                    ],
+                                    "properties": {
+                                        "ocs": {
+                                            "type": "object",
+                                            "required": [
+                                                "meta",
+                                                "data"
+                                            ],
+                                            "properties": {
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/OCSMeta"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "message"
+                                                    ],
+                                                    "properties": {
+                                                        "message": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Task not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "ocs"
+                                    ],
+                                    "properties": {
+                                        "ocs": {
+                                            "type": "object",
+                                            "required": [
+                                                "meta",
+                                                "data"
+                                            ],
+                                            "properties": {
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/OCSMeta"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "message"
+                                                    ],
+                                                    "properties": {
+                                                        "message": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/ocs/v2.php/taskprocessing/tasks_provider/{taskId}/progress": {
             "post": {
                 "operationId": "task_processing_api-set-progress",
@@ -8487,7 +9177,7 @@
                                     "output": {
                                         "type": "object",
                                         "nullable": true,
-                                        "description": "The resulting task output",
+                                        "description": "The resulting task output, files are represented by their IDs",
                                         "additionalProperties": {
                                             "type": "object"
                                         }

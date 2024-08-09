@@ -33,9 +33,12 @@ defineProps<{
 
 <style scoped lang="scss">
 .app-menu-entry {
+	--app-menu-entry-font-size: 12px;
 	width: var(--header-height);
 	height: var(--header-height);
 	position: relative;
+	// Needed to prevent jumping when hover an entry (keep in sync with :hover styles)
+	transition: width var(--animation-quick) ease-in-out;
 
 	&__link {
 		position: relative;
@@ -54,21 +57,24 @@ defineProps<{
 	&__label {
 		opacity: 0;
 		position: absolute;
-		font-size: 12px;
-		line-height: 1.25;
+		font-size: var(--app-menu-entry-font-size);
 		// this is shown directly on the background
 		color: var(--color-background-plain-text);
 		text-align: center;
 		bottom: 0;
 		left: 50%;
+		top: 50%;
 		display: block;
 		min-width: 100%;
 		transform: translateX(-50%);
-		transition: all 0.1s ease-in-out;
 		width: 100%;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		letter-spacing: -0.5px;
+	}
+
+	&__icon {
+		font-size: var(--app-menu-entry-font-size);
 	}
 
 	&--active {
@@ -84,44 +90,77 @@ defineProps<{
 			pointer-events: none;
 			border-bottom-color: var(--color-main-background);
 			transform: translateX(-50%);
-			width: 12px;
+			width: 10px;
 			height: 5px;
 			border-radius: 3px;
 			background-color: var(--color-background-plain-text);
 			left: 50%;
-			bottom: 6px;
+			bottom: 8px;
 			display: block;
-			transition: all 0.1s ease-in-out;
+			transition: all var(--animation-quick) ease-in-out;
 			opacity: 1;
 		}
 	}
 
+	&__icon,
+	&__label {
+		transition: all var(--animation-quick) ease-in-out;
+	}
+
 	// Make the hovered entry bold to see that it is hovered
-	&:hover &__label,
-	&:focus-within &__label {
+	&:hover .app-menu-entry__label,
+	&:focus-within .app-menu-entry__label {
 		font-weight: bold;
+	}
+
+	// Adjust the width when an entry is focussed
+	// The focussed / hovered entry should grow, while both neighbors need to shrink
+	&:hover,
+	&:focus-within {
+		width: calc(var(--header-height) + var(--app-menu-entry-growth));
+
+		// The next entry needs to shrink half the growth
+		+ .app-menu-entry {
+			width: calc(var(--header-height) - (var(--app-menu-entry-growth) / 2));
+			.app-menu-entry__icon {
+				margin-inline-end: calc(var(--app-menu-entry-growth) / 2);
+			}
+		}
+	}
+
+	// The previous entry needs to shrink half the growth
+	&:has(+ .app-menu-entry:hover),
+	&:has(+ .app-menu-entry:focus-within) {
+		width: calc(var(--header-height) - (var(--app-menu-entry-growth) / 2));
+		.app-menu-entry__icon {
+			margin-inline-start: calc(var(--app-menu-entry-growth) / 2);
+		}
 	}
 }
 </style>
 
 <style lang="scss">
 // Showing the label
-.app-menu-entry:hover .app-menu-entry,
-.app-menu-entry:focus-within .app-menu-entry,
-.app-menu__list:hover .app-menu-entry,
-.app-menu__list:focus-within .app-menu-entry {
+.app-menu-entry:hover,
+.app-menu-entry:focus-within,
+.app-menu__list:hover,
+.app-menu__list:focus-within {
 	// Move icon up so that the name does not overflow the icon
-	&__icon {
-		margin-block-end: calc(1.5 * 12px); // font size of label * line height
+	.app-menu-entry__icon {
+		margin-block-end: 1lh;
 	}
 
 	// Make the label visible
-	&__label {
+	.app-menu-entry__label {
 		opacity: 1;
 	}
 
 	// Hide indicator when the text is shown
-	&--active::before {
+	.app-menu-entry--active::before {
+		opacity: 0;
+	}
+
+	.app-menu-icon__unread {
 		opacity: 0;
 	}
 }

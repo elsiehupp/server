@@ -88,9 +88,9 @@ import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
 import axios from '@nextcloud/axios'
 import { loadState } from '@nextcloud/initial-state'
 
-import Config from '../services/ConfigService.js'
+import Config from '../services/ConfigService.ts'
 import { shareWithTitle } from '../utils/SharedWithMe.js'
-import Share from '../models/Share.js'
+import Share from '../models/Share.ts'
 import ShareTypes from '../mixins/ShareTypes.js'
 import SharingEntryInternal from '../components/SharingEntryInternal.vue'
 import SharingEntrySimple from '../components/SharingEntrySimple.vue'
@@ -207,7 +207,7 @@ export default {
 				this.processSharedWithMe(sharedWithMe)
 				this.processShares(shares)
 			} catch (error) {
-				if (error.response.data?.ocs?.meta?.message) {
+				if (error?.response?.data?.ocs?.meta?.message) {
 					this.error = error.response.data.ocs.meta.message
 				} else {
 					this.error = t('files_sharing', 'Unable to load the shares list')
@@ -260,11 +260,16 @@ export default {
 		 */
 		processShares({ data }) {
 			if (data.ocs && data.ocs.data && data.ocs.data.length > 0) {
-				// create Share objects and sort by newest
+				// create Share objects and sort by title in alphabetical order and then by creation time
 				const shares = data.ocs.data
 					.map(share => new Share(share))
-					.sort((a, b) => b.createdTime - a.createdTime)
-
+					.sort((a, b) => {
+						const localCompare = a.title.localeCompare(b.title)
+						if (localCompare !== 0) {
+							return localCompare
+						}
+						return b.createdTime - a.createdTime
+					})
 				this.linkShares = shares.filter(share => share.type === this.SHARE_TYPES.SHARE_TYPE_LINK || share.type === this.SHARE_TYPES.SHARE_TYPE_EMAIL)
 				this.shares = shares.filter(share => share.type !== this.SHARE_TYPES.SHARE_TYPE_LINK && share.type !== this.SHARE_TYPES.SHARE_TYPE_EMAIL)
 

@@ -21,6 +21,8 @@ export const useViewConfigStore = function(...args) {
 
 		getters: {
 			getConfig: (state) => (view: ViewId): ViewConfig => state.viewConfig[view] || {},
+
+			getConfigs: (state) => (): ViewConfigs => state.viewConfig,
 		},
 
 		actions: {
@@ -44,8 +46,10 @@ export const useViewConfigStore = function(...args) {
 			 * @param value
 			 */
 			async update(view: ViewId, key: string, value: string | number | boolean) {
-				axios.put(generateUrl(`/apps/files/api/v1/views/${view}/${key}`), {
+				axios.put(generateUrl('/apps/files/api/v1/views'), {
 					value,
+					view,
+					key,
 				})
 
 				emit('files:viewconfig:updated', { view, key, value })

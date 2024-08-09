@@ -7,6 +7,7 @@
  */
 namespace OCA\Files\Controller;
 
+use OC\Files\FilenameValidator;
 use OCA\Files\Activity\Helper;
 use OCA\Files\AppInfo\Application;
 use OCA\Files\Event\LoadAdditionalScriptsEvent;
@@ -17,6 +18,8 @@ use OCA\Files\Service\ViewConfig;
 use OCA\Viewer\Event\LoadViewer;
 use OCP\App\IAppManager;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\Attribute\NoAdminRequired;
+use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
 use OCP\AppFramework\Http\Attribute\OpenAPI;
 use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\RedirectResponse;
@@ -34,57 +37,31 @@ use OCP\IL10N;
 use OCP\IRequest;
 use OCP\IURLGenerator;
 use OCP\IUserSession;
-use OCP\Share\IManager;
 
 /**
  * @package OCA\Files\Controller
  */
 #[OpenAPI(scope: OpenAPI::SCOPE_IGNORE)]
 class ViewController extends Controller {
-	private IURLGenerator $urlGenerator;
-	private IL10N $l10n;
-	private IConfig $config;
-	private IEventDispatcher $eventDispatcher;
-	private IUserSession $userSession;
-	private IAppManager $appManager;
-	private IRootFolder $rootFolder;
-	private Helper $activityHelper;
-	private IInitialState $initialState;
-	private ITemplateManager $templateManager;
-	private IManager $shareManager;
-	private UserConfig $userConfig;
-	private ViewConfig $viewConfig;
 
-	public function __construct(string $appName,
+	public function __construct(
+		string $appName,
 		IRequest $request,
-		IURLGenerator $urlGenerator,
-		IL10N $l10n,
-		IConfig $config,
-		IEventDispatcher $eventDispatcher,
-		IUserSession $userSession,
-		IAppManager $appManager,
-		IRootFolder $rootFolder,
-		Helper $activityHelper,
-		IInitialState $initialState,
-		ITemplateManager $templateManager,
-		IManager $shareManager,
-		UserConfig $userConfig,
-		ViewConfig $viewConfig
+		private IURLGenerator $urlGenerator,
+		private IL10N $l10n,
+		private IConfig $config,
+		private IEventDispatcher $eventDispatcher,
+		private IUserSession $userSession,
+		private IAppManager $appManager,
+		private IRootFolder $rootFolder,
+		private Helper $activityHelper,
+		private IInitialState $initialState,
+		private ITemplateManager $templateManager,
+		private UserConfig $userConfig,
+		private ViewConfig $viewConfig,
+		private FilenameValidator $filenameValidator,
 	) {
 		parent::__construct($appName, $request);
-		$this->urlGenerator = $urlGenerator;
-		$this->l10n = $l10n;
-		$this->config = $config;
-		$this->eventDispatcher = $eventDispatcher;
-		$this->userSession = $userSession;
-		$this->appManager = $appManager;
-		$this->rootFolder = $rootFolder;
-		$this->activityHelper = $activityHelper;
-		$this->initialState = $initialState;
-		$this->templateManager = $templateManager;
-		$this->shareManager = $shareManager;
-		$this->userConfig = $userConfig;
-		$this->viewConfig = $viewConfig;
 	}
 
 	/**
@@ -100,12 +77,11 @@ class ViewController extends Controller {
 	}
 
 	/**
-	 * @NoCSRFRequired
-	 * @NoAdminRequired
-	 *
 	 * @param string $fileid
 	 * @return TemplateResponse|RedirectResponse
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function showFile(?string $fileid = null): Response {
 		if (!$fileid) {
 			return new RedirectResponse($this->urlGenerator->linkToRoute('files.view.index'));
@@ -121,43 +97,40 @@ class ViewController extends Controller {
 
 
 	/**
-	 * @NoCSRFRequired
-	 * @NoAdminRequired
-	 *
 	 * @param string $dir
 	 * @param string $view
 	 * @param string $fileid
 	 * @param bool $fileNotFound
 	 * @return TemplateResponse|RedirectResponse
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function indexView($dir = '', $view = '', $fileid = null, $fileNotFound = false) {
 		return $this->index($dir, $view, $fileid, $fileNotFound);
 	}
 
 	/**
-	 * @NoCSRFRequired
-	 * @NoAdminRequired
-	 *
 	 * @param string $dir
 	 * @param string $view
 	 * @param string $fileid
 	 * @param bool $fileNotFound
 	 * @return TemplateResponse|RedirectResponse
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function indexViewFileid($dir = '', $view = '', $fileid = null, $fileNotFound = false) {
 		return $this->index($dir, $view, $fileid, $fileNotFound);
 	}
 
 	/**
-	 * @NoCSRFRequired
-	 * @NoAdminRequired
-	 *
 	 * @param string $dir
 	 * @param string $view
 	 * @param string $fileid
 	 * @param bool $fileNotFound
 	 * @return TemplateResponse|RedirectResponse
 	 */
+	#[NoAdminRequired]
+	#[NoCSRFRequired]
 	public function index($dir = '', $view = '', $fileid = null, $fileNotFound = false) {
 		if ($fileid !== null && $view !== 'trashbin') {
 			try {
@@ -220,8 +193,9 @@ class ViewController extends Controller {
 		$filesSortingConfig = json_decode($this->config->getUserValue($userId, 'files', 'files_sorting_configs', '{}'), true);
 		$this->initialState->provideInitialState('filesSortingConfig', $filesSortingConfig);
 
-		// Forbidden file characters
-		$forbiddenCharacters = \OCP\Util::getForbiddenFileNameChars();
+		// Forbidden file characters (deprecated use capabilities)
+		// TODO: Remove with next release of `@nextcloud/files`
+		$forbiddenCharacters = $this->filenameValidator->getForbiddenCharacters();
 		$this->initialState->provideInitialState('forbiddenCharacters', $forbiddenCharacters);
 
 		$event = new LoadAdditionalScriptsEvent();
@@ -361,6 +335,8 @@ class ViewController extends Controller {
 			} else {
 				// set parent path as dir
 				$params['dir'] = $baseFolder->getRelativePath($node->getParent()->getPath());
+				// open the file by default (opening the viewer)
+				$params['openfile'] = 'true';
 			}
 			return new RedirectResponse($this->urlGenerator->linkToRoute('files.view.indexViewFileid', $params));
 		}

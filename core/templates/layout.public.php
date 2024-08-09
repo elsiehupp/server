@@ -33,10 +33,8 @@ p($theme->getTitle());
 	<?php print_unescaped($_['headers']); ?>
 </head>
 <body id="<?php p($_['bodyid']);?>">
-<?php include('layout.noscript.warning.php'); ?>
-<?php foreach ($_['initialStates'] as $app => $initialState) { ?>
-	<input type="hidden" id="initial-state-<?php p($app); ?>" value="<?php p(base64_encode($initialState)); ?>">
-<?php }?>
+	<?php include('layout.noscript.warning.php'); ?>
+	<?php include('layout.initial-state.php'); ?>
 	<div id="skip-actions">
 		<?php if ($_['id-app-content'] !== null) { ?><a href="<?php p($_['id-app-content']); ?>" class="button primary skip-navigation skip-content"><?php p($l->t('Skip to main content')); ?></a><?php } ?>
 		<?php if ($_['id-app-navigation'] !== null) { ?><a href="<?php p($_['id-app-navigation']); ?>" class="button primary skip-navigation"><?php p($l->t('Skip to navigation of app')); ?></a><?php } ?>
@@ -119,7 +117,7 @@ if (isset($template) && $template->getActionCount() !== 0) {
 		<?php
 if ($_['showSimpleSignUpLink']) {
 	?>
-			<p>
+			<p class="footer__simple-sign-up">
 				<a href="<?php p($_['signUpLink']); ?>" target="_blank" rel="noreferrer noopener">
 					<?php p($l->t('Get your own free account')); ?>
 				</a>

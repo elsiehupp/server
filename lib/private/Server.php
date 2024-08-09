@@ -100,6 +100,7 @@ use OC\Security\CSP\ContentSecurityPolicyNonceManager;
 use OC\Security\CSRF\CsrfTokenManager;
 use OC\Security\CSRF\TokenStorage\SessionStorage;
 use OC\Security\Hasher;
+use OC\Security\Ip\RemoteAddress;
 use OC\Security\RateLimiting\Limiter;
 use OC\Security\SecureRandom;
 use OC\Security\TrustedDomainHelper;
@@ -184,7 +185,6 @@ use OCP\IPhoneNumberUtil;
 use OCP\IPreview;
 use OCP\IRequest;
 use OCP\IRequestId;
-use OCP\ISearch;
 use OCP\IServerContainer;
 use OCP\ISession;
 use OCP\ITagManager;
@@ -213,6 +213,7 @@ use OCP\Security\IContentSecurityPolicyManager;
 use OCP\Security\ICredentialsManager;
 use OCP\Security\ICrypto;
 use OCP\Security\IHasher;
+use OCP\Security\Ip\IRemoteAddress;
 use OCP\Security\ISecureRandom;
 use OCP\Security\ITrustedDomainHelper;
 use OCP\Security\RateLimiting\ILimiter;
@@ -464,7 +465,8 @@ class Server extends ServerContainer implements IServerContainer {
 				$this->get(IUserManager::class),
 				$this->get(IEventDispatcher::class),
 				$this->get(LoggerInterface::class),
-				$this->get(ICacheFactory::class)
+				$this->get(ICacheFactory::class),
+				$this->get(IRemoteAddress::class),
 			);
 			return $groupManager;
 		});
@@ -487,7 +489,7 @@ class Server extends ServerContainer implements IServerContainer {
 
 		$this->registerService(\OC\User\Session::class, function (Server $c) {
 			$manager = $c->get(IUserManager::class);
-			$session = new \OC\Session\Memory('');
+			$session = new \OC\Session\Memory();
 			$timeFactory = new TimeFactory();
 			// Token providers might require a working database. This code
 			// might however be called when Nextcloud is not yet setup.
@@ -762,10 +764,6 @@ class Server extends ServerContainer implements IServerContainer {
 		/** @deprecated 19.0.0 */
 		$this->registerDeprecatedAlias('Router', IRouter::class);
 
-		$this->registerAlias(ISearch::class, Search::class);
-		/** @deprecated 19.0.0 */
-		$this->registerDeprecatedAlias('Search', ISearch::class);
-
 		$this->registerService(\OC\Security\RateLimiting\Backend\IBackend::class, function ($c) {
 			$config = $c->get(\OCP\IConfig::class);
 			if (ltrim($config->getSystemValueString('memcache.distributed', ''), '\\') === \OC\Memcache\Redis::class) {
@@ -1022,6 +1020,9 @@ class Server extends ServerContainer implements IServerContainer {
 		});
 		/** @deprecated 19.0.0 */
 		$this->registerDeprecatedAlias('Mailer', IMailer::class);
+
+		/** @since 30.0.0 */
+		$this->registerAlias(\OCP\Mail\Provider\IManager::class, \OC\Mail\Provider\Manager::class);
 
 		/** @deprecated 21.0.0 */
 		$this->registerDeprecatedAlias('LDAPProvider', ILDAPProvider::class);
@@ -1402,6 +1403,10 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerAlias(IDeclarativeManager::class, DeclarativeManager::class);
 
 		$this->registerAlias(\OCP\TaskProcessing\IManager::class, \OC\TaskProcessing\Manager::class);
+
+		$this->registerAlias(IRemoteAddress::class, RemoteAddress::class);
+
+		$this->registerAlias(\OCP\Security\Ip\IFactory::class, \OC\Security\Ip\Factory::class);
 
 		$this->connectDispatcher();
 	}
@@ -1797,16 +1802,6 @@ class Server extends ServerContainer implements IServerContainer {
 	 */
 	public function getRouter() {
 		return $this->get(IRouter::class);
-	}
-
-	/**
-	 * Returns a search instance
-	 *
-	 * @return ISearch
-	 * @deprecated 20.0.0
-	 */
-	public function getSearch() {
-		return $this->get(ISearch::class);
 	}
 
 	/**

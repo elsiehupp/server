@@ -5,7 +5,6 @@
  */
 namespace OC\Core\Migrations;
 
-use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use OCP\DB\ISchemaWrapper;
 use OCP\DB\Types;
 use OCP\IDBConnection;
@@ -124,10 +123,12 @@ class Version13000Date20170718121200 extends SimpleMigrationStep {
 			$table->addIndex(['user_id', 'root_id', 'mount_point'], 'mounts_user_root_path_index', [], ['lengths' => [null, null, 128]]);
 		} else {
 			$table = $schema->getTable('mounts');
-			$table->addColumn('mount_id', Types::BIGINT, [
-				'notnull' => false,
-				'length' => 20,
-			]);
+			if (!$table->hasColumn('mount_id')) {
+				$table->addColumn('mount_id', Types::BIGINT, [
+					'notnull' => false,
+					'length' => 20,
+				]);
+			}
 			if (!$table->hasIndex('mounts_mount_id_index')) {
 				$table->addIndex(['mount_id'], 'mounts_mount_id_index');
 			}
@@ -238,7 +239,7 @@ class Version13000Date20170718121200 extends SimpleMigrationStep {
 			$table->addIndex(['name'], 'fs_name_hash');
 			$table->addIndex(['mtime'], 'fs_mtime');
 			$table->addIndex(['size'], 'fs_size');
-			if (!$schema->getDatabasePlatform() instanceof PostgreSQL94Platform) {
+			if ($this->connection->getDatabaseProvider() !== IDBConnection::PLATFORM_POSTGRES) {
 				$table->addIndex(['storage', 'path'], 'fs_storage_path_prefix', [], ['lengths' => [null, 64]]);
 			}
 		}

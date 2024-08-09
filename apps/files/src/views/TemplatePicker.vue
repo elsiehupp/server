@@ -47,7 +47,7 @@
 import type { TemplateFile } from '../types.ts'
 
 import { getCurrentUser } from '@nextcloud/auth'
-import { showError } from '@nextcloud/dialogs'
+import { showError, spawnDialog } from '@nextcloud/dialogs'
 import { emit } from '@nextcloud/event-bus'
 import { File } from '@nextcloud/files'
 import { translate as t } from '@nextcloud/l10n'
@@ -59,7 +59,8 @@ import { createFromTemplate, getTemplates } from '../services/Templates.js'
 import NcEmptyContent from '@nextcloud/vue/dist/Components/NcEmptyContent.js'
 import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
 import TemplatePreview from '../components/TemplatePreview.vue'
-import logger from '../logger.js'
+import TemplateFiller from '../components/TemplateFiller.vue'
+import logger from '../logger.ts'
 
 const border = 2
 const margin = 8
@@ -200,8 +201,7 @@ export default defineComponent({
 			this.checked = fileid
 		},
 
-		async onSubmit() {
-			this.loading = true
+		async createFile(templateFields) {
 			const currentDirectory = new URL(window.location.href).searchParams.get('dir') || '/'
 
 			// If the file doesn't have an extension, add the default one
@@ -215,6 +215,7 @@ export default defineComponent({
 					normalize(`${currentDirectory}/${this.name}`),
 					this.selectedTemplate?.filename as string ?? '',
 					this.selectedTemplate?.templateType as string ?? '',
+					templateFields,
 				)
 				logger.debug('Created new file', fileInfo)
 
@@ -255,6 +256,18 @@ export default defineComponent({
 				showError(t('files', 'Unable to create new file from template'))
 			} finally {
 				this.loading = false
+			}
+		},
+
+		async onSubmit() {
+			if (this.selectedTemplate?.fields?.length > 0) {
+				spawnDialog(TemplateFiller, {
+					fields: this.selectedTemplate.fields,
+					onSubmit: this.createFile,
+				})
+			} else {
+				this.loading = true
+				await this.createFile()
 			}
 		},
 	},

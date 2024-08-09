@@ -62,7 +62,7 @@
 						type="radio"
 						button-variant-grouped="vertical"
 						@update:checked="toggleCustomPermissions">
-						{{ t('files_sharing', 'File drop') }}
+						{{ t('files_sharing', 'File request') }}
 						<small class="subline">{{ t('files_sharing', 'Upload only') }}</small>
 						<template #icon>
 							<UploadIcon :size="20" />
@@ -164,10 +164,9 @@
 						{{ t('files_sharing', 'Note to recipient') }}
 					</NcCheckboxRadioSwitch>
 					<template v-if="writeNoteToRecipientIsChecked">
-						<label for="share-note-textarea">
-							{{ t('files_sharing', 'Enter a note for the share recipient') }}
-						</label>
-						<textarea id="share-note-textarea" :value="share.note" @input="share.note = $event.target.value" />
+						<NcTextArea :label="t('files_sharing', 'Note to recipient')"
+							:placeholder="t('files_sharing', 'Enter a note for the share recipient')"
+							:value.sync="share.note" />
 					</template>
 					<ExternalShareAction v-for="action in externalLinkActions"
 						:id="action.id"
@@ -247,15 +246,17 @@
 <script>
 import { emit } from '@nextcloud/event-bus'
 import { getLanguage } from '@nextcloud/l10n'
-import { Type as ShareType } from '@nextcloud/sharing'
+import { ShareType } from '@nextcloud/sharing'
 
-import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
-import NcInputField from '@nextcloud/vue/dist/Components/NcInputField.js'
-import NcPasswordField from '@nextcloud/vue/dist/Components/NcPasswordField.js'
 import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
-import NcDateTimePickerNative from '@nextcloud/vue/dist/Components/NcDateTimePickerNative.js'
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
+import NcDateTimePickerNative from '@nextcloud/vue/dist/Components/NcDateTimePickerNative.js'
+import NcInputField from '@nextcloud/vue/dist/Components/NcInputField.js'
 import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
+import NcPasswordField from '@nextcloud/vue/dist/Components/NcPasswordField.js'
+import NcTextArea from '@nextcloud/vue/dist/Components/NcTextArea.js'
+
 import CircleIcon from 'vue-material-design-icons/CircleOutline.vue'
 import CloseIcon from 'vue-material-design-icons/Close.vue'
 import EditIcon from 'vue-material-design-icons/Pencil.vue'
@@ -272,8 +273,8 @@ import DotsHorizontalIcon from 'vue-material-design-icons/DotsHorizontal.vue'
 
 import ExternalShareAction from '../components/ExternalShareAction.vue'
 
-import GeneratePassword from '../utils/GeneratePassword.js'
-import Share from '../models/Share.js'
+import GeneratePassword from '../utils/GeneratePassword.ts'
+import Share from '../models/Share.ts'
 import ShareRequests from '../mixins/ShareRequests.js'
 import ShareTypes from '../mixins/ShareTypes.js'
 import SharesMixin from '../mixins/SharesMixin.js'
@@ -290,11 +291,12 @@ export default {
 	components: {
 		NcAvatar,
 		NcButton,
-		NcInputField,
-		NcPasswordField,
-		NcDateTimePickerNative,
 		NcCheckboxRadioSwitch,
+		NcDateTimePickerNative,
+		NcInputField,
 		NcLoadingIcon,
+		NcPasswordField,
+		NcTextArea,
 		CloseIcon,
 		CircleIcon,
 		EditIcon,
@@ -421,19 +423,19 @@ export default {
 		 */
 		canDownload: {
 			get() {
-				return this.share.attributes.find(attr => attr.key === 'download')?.enabled || false
+				return this.share.attributes.find(attr => attr.key === 'download')?.value || false
 			},
 			set(checked) {
 				// Find the 'download' attribute and update its value
 				const downloadAttr = this.share.attributes.find(attr => attr.key === 'download')
 				if (downloadAttr) {
-					downloadAttr.enabled = checked
+					downloadAttr.value = checked
 				}
 			},
 		},
 		/**
 		 * Is this share readable
-		 * Needed for some federated shares that might have been added from file drop links
+		 * Needed for some federated shares that might have been added from file requests links
 		 */
 		hasRead: {
 			get() {
@@ -470,7 +472,7 @@ export default {
 			},
 			async set(enabled) {
 				if (enabled) {
-					this.share.password = await GeneratePassword()
+					this.share.password = await GeneratePassword(true)
 					this.$set(this.share, 'newPassword', this.share.password)
 				} else {
 					this.share.password = ''
@@ -603,7 +605,10 @@ export default {
 			return (this.fileInfo.canDownload() || this.canDownload)
 		},
 		canRemoveReadPermission() {
-			return this.allowsFileDrop && this.share.type === this.SHARE_TYPES.SHARE_TYPE_LINK
+			return this.allowsFileDrop && (
+				this.share.type === this.SHARE_TYPES.SHARE_TYPE_LINK
+					|| this.share.type === this.SHARE_TYPES.SHARE_TYPE_EMAIL
+			)
 		},
 		// if newPassword exists, but is empty, it means
 		// the user deleted the original password
@@ -678,7 +683,7 @@ export default {
 			return OC.appswebroots.spreed !== undefined
 		},
 		canChangeHideDownload() {
-			const hasDisabledDownload = (shareAttribute) => shareAttribute.key === 'download' && shareAttribute.scope === 'permissions' && shareAttribute.enabled === false
+			const hasDisabledDownload = (shareAttribute) => shareAttribute.key === 'download' && shareAttribute.scope === 'permissions' && shareAttribute.value === false
 			return this.fileInfo.shareAttributes.some(hasDisabledDownload)
 		},
 		customPermissionsList() {
@@ -714,7 +719,7 @@ export default {
 		 * @return {Array}
 		 */
 		externalLinkActions() {
-			const filterValidAction = (action) => (action.shareType.includes(ShareType.SHARE_TYPE_LINK) || action.shareType.includes(ShareType.SHARE_TYPE_EMAIL)) && action.advanced
+			const filterValidAction = (action) => (action.shareType.includes(ShareType.Link) || action.shareType.includes(ShareType.Email)) && action.advanced
 			// filter only the advanced registered actions for said link
 			return this.ExternalShareActions.actions
 				.filter(filterValidAction)
@@ -772,7 +777,7 @@ export default {
 
 			if (this.isNewShare) {
 				if (this.isPasswordEnforced && this.isPublicShare) {
-					this.$set(this.share, 'newPassword', await GeneratePassword())
+					this.$set(this.share, 'newPassword', await GeneratePassword(true))
 					this.advancedSectionAccordionExpanded = true
 				}
 				/* Set default expiration dates if configured */
@@ -803,6 +808,10 @@ export default {
 				|| this.isValidShareAttribute(this.share.label)
 			) {
 				this.advancedSectionAccordionExpanded = true
+			}
+
+			if (this.share.note) {
+				this.writeNoteToRecipientIsChecked = true
 			}
 
 		},

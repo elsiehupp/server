@@ -38,6 +38,7 @@ OC.L10N.register(
     "%s (restricted)" : "%s(제한됨)",
     "%s (invisible)" : "%s(숨겨짐)",
     "<strong>System tags</strong> for a file have been modified" : "파일의 <strong>시스템 태그</strong>가 수정됨",
+    "Files" : "파일",
     "Tags" : "태그",
     "All tagged %s …" : "모두 %s(으)로 태그됨 ...",
     "tagged %s" : "%s(으)로 태그됨",
@@ -69,8 +70,6 @@ OC.L10N.register(
     "Failed to load selected tags" : "선택 태그 불러오기 실패",
     "Failed to select tag" : "태그 선택 실패",
     "Collaborative tags are available for all users. Restricted tags are visible to users but cannot be assigned by them. Invisible tags are for internal use, since users cannot see or assign them." : "모든 사용자가 사용할 수 있는 협업 태그입니다. 제한된 태그는 사용자에게 표시되지만 할당할 수는 없습니다. 숨겨진 태그는 내부용으로 사용되며, 사용자는 보거나 할당할 수 없습니다.",
-    "This file has the tag {tag}" : "이 파일에 {tag} 태그가 있음",
-    "This file has the tags {firstTags} and {lastTag}" : "이 파일에 {firstTags}와 {lastTag} 태그가 있음",
     "List of tags and their associated files and folders." : "태그 및 태그와 연결된 파일과 폴더 목록",
     "No tags found" : "태그를 찾을 수 없음",
     "Tags you have created will show up here." : "생성한 태그가 이곳에 나타납니다.",
@@ -91,6 +90,8 @@ OC.L10N.register(
     "No files in here" : "여기에 파일 없음",
     "No entries found in this folder" : "이 폴더에 항목 없음",
     "Size" : "크기",
-    "Modified" : "수정됨"
+    "Modified" : "수정됨",
+    "This file has the tag {tag}" : "이 파일에 {tag} 태그가 있음",
+    "This file has the tags {firstTags} and {lastTag}" : "이 파일에 {firstTags}와 {lastTag} 태그가 있음"
 },
 "nplurals=1; plural=0;");

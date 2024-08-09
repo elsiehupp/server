@@ -38,6 +38,7 @@ OC.L10N.register(
     "%s (restricted)" : "%s（受限）",
     "%s (invisible)" : "%s（隱藏）",
     "<strong>System tags</strong> for a file have been modified" : "一個檔案的<strong>系統標籤</strong>已經被修改",
+    "Files" : "檔案",
     "Tags" : "標籤",
     "All tagged %s …" : "全部標記為 %s……",
     "tagged %s" : "已標記 %s",
@@ -71,8 +72,6 @@ OC.L10N.register(
     "Failed to load selected tags" : "載入選定的標籤失敗",
     "Failed to select tag" : "選取標籤失敗",
     "Collaborative tags are available for all users. Restricted tags are visible to users but cannot be assigned by them. Invisible tags are for internal use, since users cannot see or assign them." : "協作標籤適用於所有使用者。使用者可以看到受限制的標籤，但無法由他們指派。不可見的標籤僅供內部使用，因為使用者無法看見或指派它們。",
-    "This file has the tag {tag}" : "此檔案有標籤 {tag}",
-    "This file has the tags {firstTags} and {lastTag}" : "此檔案有標籤 {firstTags} 與 {lastTag}",
     "List of tags and their associated files and folders." : "標籤及其關聯檔案與資料夾的清單。",
     "No tags found" : "找不到標籤",
     "Tags you have created will show up here." : "您建立的標籤將會顯示在此處。",
@@ -94,6 +93,8 @@ OC.L10N.register(
     "No files in here" : "沒有任何檔案",
     "No entries found in this folder" : "在此資料夾中沒有任何項目",
     "Size" : "大小",
-    "Modified" : "修改時間"
+    "Modified" : "修改時間",
+    "This file has the tag {tag}" : "此檔案有標籤 {tag}",
+    "This file has the tags {firstTags} and {lastTag}" : "此檔案有標籤 {firstTags} 與 {lastTag}"
 },
 "nplurals=1; plural=0;");

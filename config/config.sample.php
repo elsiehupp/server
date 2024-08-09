@@ -493,6 +493,8 @@ $CONFIG = [
 
 /**
  * Enable SMTP class debugging.
+ * NOTE: ``loglevel`` will likely need to be adjusted too. See docs: 
+ *   https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/email_configuration.html#enabling-debug-mode
  *
  * Defaults to ``false``
  */
@@ -1057,6 +1059,9 @@ $CONFIG = [
  *                this condition is met
  *  - ``apps``:   if the log message is invoked by one of the specified apps,
  *                this condition is met
+ *  - ``matches``: if all the conditions inside a group match,
+ *                this condition is met. This allows to log only entries to an app
+ *                by a few users.
  *
  * Defaults to an empty array.
  */
@@ -1064,6 +1069,15 @@ $CONFIG = [
 	'shared_secret' => '57b58edb6637fe3059b3595cf9c41b9',
 	'users' => ['sample-user'],
 	'apps' => ['files'],
+	'matches' => [
+		[
+			'shared_secret' => '57b58edb6637fe3059b3595cf9c41b9',
+			'users' => ['sample-user'],
+			'apps' => ['files'],
+			'loglevel' => 1,
+			'message' => 'contains substring'
+		],
+	],
 ],
 
 /**
@@ -1134,6 +1148,7 @@ $CONFIG = [
  * - Android client: ``https://play.google.com/store/apps/details?id=com.nextcloud.client``
  * - iOS client: ``https://itunes.apple.com/us/app/nextcloud/id1125420102?mt=8``
  * - iOS client app id: ``1125420102``
+ * - F-Droid client: ``https://f-droid.org/packages/com.nextcloud.client/``
  */
 'customclient_desktop' =>
 	'https://nextcloud.com/install/#install-clients',
@@ -1143,6 +1158,8 @@ $CONFIG = [
 	'https://itunes.apple.com/us/app/nextcloud/id1125420102?mt=8',
 'customclient_ios_appid' =>
 		'1125420102',
+'customclient_fdroid' =>
+	'https://f-droid.org/packages/com.nextcloud.client/',
 /**
  * Apps
  *
@@ -1290,13 +1307,19 @@ $CONFIG = [
 /**
  * custom path for ffmpeg binary
  *
- * Defaults to ``null`` and falls back to searching ``avconv`` and ``ffmpeg`` in the configured ``PATH`` environment
+ * Defaults to ``null`` and falls back to searching ``avconv`` and ``ffmpeg`` 
+ * in the configured ``PATH`` environment
  */
 'preview_ffmpeg_path' => '/usr/bin/ffmpeg',
 
 /**
  * Set the URL of the Imaginary service to send image previews to.
- * Also requires the ``OC\Preview\Imaginary`` provider to be enabled.
+ * Also requires the ``OC\Preview\Imaginary`` provider to be enabled in the 
+ * ``enabledPreviewProviders`` array, to create previews for these mimetypes: bmp, 
+ * x-bitmap, png, jpeg, gif, heic, heif, svg+xml, tiff, webp and illustrator.
+ *
+ * If you want Imaginary to also create preview images from PDF Documents, you 
+ * have to add the ``OC\Preview\ImaginaryPDF`` provider as well.
  *
  * See https://github.com/h2non/imaginary
  */
@@ -1354,6 +1377,15 @@ $CONFIG = [
 	'OC\Preview\TXT',
 	'OC\Preview\XBitmap',
 ],
+
+/**
+ * Maximum file size for metadata generation.
+ * If a file exceeds this size, metadata generation will be skipped.
+ * Note: memory equivalent to this size will be used for metadata generation.
+ *
+ * Default: 256 megabytes.
+ */
+'metadata_max_filesize' => 256,
 
 /**
  * LDAP
@@ -1988,6 +2020,18 @@ $CONFIG = [
 'forbidden_filenames' => ['.htaccess'],
 
 /**
+ * Disallow the upload of files with specific basenames.
+ *
+ * The basename is the name of the file without the extension,
+ * e.g. for "archive.tar.gz" the basename would be "archive".
+ *
+ * Note that this list is case-insensitive.
+ *
+ * Defaults to ``array()``
+ */
+'forbidden_filename_basenames' => [],
+
+/**
  * Block characters from being used in filenames. This is useful if you
  * have a filesystem or OS which does not support certain characters like windows.
  *
@@ -2194,6 +2238,16 @@ $CONFIG = [
  * Defaults to ``'HTTP_X_FORWARDED_FOR'``
  */
 'forwarded_for_headers' => ['HTTP_X_FORWARDED', 'HTTP_FORWARDED_FOR'],
+
+/**
+ * List of trusted IP ranges for admin actions
+ *
+ * If this list is non-empty, all admin actions must be triggered from
+ * IP addresses inside theses ranges.
+ *
+ * Defaults to an empty array.
+ */
+'allowed_admin_ranges' => ['192.0.2.42/32', '233.252.0.0/24', '2001:db8::13:37/64'],
 
 /**
  * max file size for animating gifs on public-sharing-site.

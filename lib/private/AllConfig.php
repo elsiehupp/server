@@ -41,7 +41,7 @@ class AllConfig implements IConfig {
 	private CappedMemoryCache $userCache;
 
 	public function __construct(
-		private SystemConfig $systemConfig
+		private SystemConfig $systemConfig,
 	) {
 		$this->userCache = new CappedMemoryCache();
 	}
@@ -242,10 +242,10 @@ class AllConfig implements IConfig {
 		$prevValue = $this->getUserValue($userId, $appName, $key, null);
 
 		if ($prevValue !== null) {
-			if ($prevValue === (string)$value) {
-				return;
-			} elseif ($preCondition !== null && $prevValue !== (string)$preCondition) {
+			if ($preCondition !== null && $prevValue !== (string)$preCondition) {
 				throw new PreConditionNotMetException();
+			} elseif ($prevValue === (string)$value) {
+				return;
 			} else {
 				$qb = $this->connection->getQueryBuilder();
 				$qb->update('preferences')

@@ -25,6 +25,7 @@ use OCP\IRequest;
 use OCP\IURLGenerator;
 use OCP\IUserSession;
 use OCP\L10N\IFactory;
+use OCP\ServerVersion;
 use OCP\Support\Subscription\IRegistry;
 use OCP\Util;
 
@@ -99,11 +100,10 @@ class TemplateLayout extends \OC_Template {
 			$logoUrl = $this->config->getSystemValueString('logo_url', '');
 			$this->assign('logoUrl', $logoUrl);
 
-			// Set default app name
-			$defaultApp = \OC::$server->getAppManager()->getDefaultAppForUser();
-			$defaultAppInfo = \OC::$server->getAppManager()->getAppInfo($defaultApp);
-			$l10n = \OC::$server->get(IFactory::class)->get($defaultApp);
-			$this->assign('defaultAppName', $l10n->t($defaultAppInfo['name']));
+			// Set default entry name
+			$defaultEntryId = \OCP\Server::get(INavigationManager::class)->getDefaultEntryIdForUser();
+			$defaultEntry = \OCP\Server::get(INavigationManager::class)->get($defaultEntryId);
+			$this->assign('defaultAppName', $defaultEntry['name']);
 
 			// Add navigation entry
 			$this->assign('application', '');
@@ -193,13 +193,15 @@ class TemplateLayout extends \OC_Template {
 		} else {
 			parent::__construct('core', 'layout.base');
 		}
-		// Send the language and the locale to our layouts
+		// Send the language, locale, and direction to our layouts
 		$lang = \OC::$server->get(IFactory::class)->findLanguage();
 		$locale = \OC::$server->get(IFactory::class)->findLocale($lang);
+		$direction = \OC::$server->getL10NFactory()->getLanguageDirection($lang);
 
 		$lang = str_replace('_', '-', $lang);
 		$this->assign('language', $lang);
 		$this->assign('locale', $locale);
+		$this->assign('direction', $direction);
 
 		if (\OC::$server->getSystemConfig()->getValue('installed', false)) {
 			if (empty(self::$versionHash)) {
@@ -219,6 +221,7 @@ class TemplateLayout extends \OC_Template {
 			// this is on purpose outside of the if statement below so that the initial state is prefilled (done in the getConfig() call)
 			// see https://github.com/nextcloud/server/pull/22636 for details
 			$jsConfigHelper = new JSConfigHelper(
+				\OCP\Server::get(ServerVersion::class),
 				\OCP\Util::getL10N('lib'),
 				\OCP\Server::get(Defaults::class),
 				\OC::$server->getAppManager(),
@@ -243,7 +246,7 @@ class TemplateLayout extends \OC_Template {
 		foreach ($jsFiles as $info) {
 			$web = $info[1];
 			$file = $info[2];
-			$this->append('jsfiles', $web.'/'.$file . $this->getVersionHashSuffix());
+			$this->append('jsfiles', $web . '/' . $file . $this->getVersionHashSuffix());
 		}
 
 		try {
@@ -276,14 +279,14 @@ class TemplateLayout extends \OC_Template {
 			$file = $info[2];
 
 			if (str_ends_with($file, 'print.css')) {
-				$this->append('printcssfiles', $web.'/'.$file . $this->getVersionHashSuffix());
+				$this->append('printcssfiles', $web . '/' . $file . $this->getVersionHashSuffix());
 			} else {
 				$suffix = $this->getVersionHashSuffix($web, $file);
 
 				if (!str_contains($file, '?v=')) {
-					$this->append('cssfiles', $web.'/'.$file . $suffix);
+					$this->append('cssfiles', $web . '/' . $file . $suffix);
 				} else {
-					$this->append('cssfiles', $web.'/'.$file . '-' . substr($suffix, 3));
+					$this->append('cssfiles', $web . '/' . $file . '-' . substr($suffix, 3));
 				}
 			}
 		}

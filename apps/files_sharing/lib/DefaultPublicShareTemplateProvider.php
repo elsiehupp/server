@@ -77,6 +77,7 @@ class DefaultPublicShareTemplateProvider implements IPublicShareTemplateProvider
 		$view = 'public-share';
 		if ($shareNode instanceof File) {
 			$view = 'public-file-share';
+			$this->initialState->provideInitialState('fileId', $shareNode->getId());
 		} elseif (($share->getPermissions() & \OCP\Constants::PERMISSION_CREATE)
 			&& !($share->getPermissions() & \OCP\Constants::PERMISSION_READ)
 		) {
@@ -100,7 +101,6 @@ class DefaultPublicShareTemplateProvider implements IPublicShareTemplateProvider
 		\OCP\Util::addInitScript(Application::APP_ID, 'init');
 		\OCP\Util::addInitScript(Application::APP_ID, 'init-public');
 		\OCP\Util::addScript('files', 'main');
-		\OCP\Util::addStyle('files', 'merged');
 
 		// Add file-request script if needed
 		$attributes = $share->getAttributes();

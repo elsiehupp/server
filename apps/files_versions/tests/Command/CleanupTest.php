@@ -52,7 +52,7 @@ class CleanupTest extends TestCase {
 	 * @dataProvider dataTestDeleteVersions
 	 * @param boolean $nodeExists
 	 */
-	public function testDeleteVersions($nodeExists) {
+	public function testDeleteVersions($nodeExists): void {
 		$this->rootFolder->expects($this->once())
 			->method('nodeExists')
 			->with('/testUser/files_versions')
@@ -102,7 +102,7 @@ class CleanupTest extends TestCase {
 	/**
 	 * test delete versions from users given as parameter
 	 */
-	public function testExecuteDeleteListOfUsers() {
+	public function testExecuteDeleteListOfUsers(): void {
 		$userIds = ['user1', 'user2', 'user3'];
 
 		$instance = $this->getMockBuilder('OCA\Files_Versions\Command\CleanUp')
@@ -111,7 +111,7 @@ class CleanupTest extends TestCase {
 			->getMock();
 		$instance->expects($this->exactly(count($userIds)))
 			->method('deleteVersions')
-			->willReturnCallback(function ($user) use ($userIds) {
+			->willReturnCallback(function ($user) use ($userIds): void {
 				$this->assertTrue(in_array($user, $userIds));
 			});
 
@@ -133,7 +133,7 @@ class CleanupTest extends TestCase {
 	/**
 	 * test delete versions of all users
 	 */
-	public function testExecuteAllUsers() {
+	public function testExecuteAllUsers(): void {
 		$userIds = [];
 		$backendUsers = ['user1', 'user2'];
 
@@ -150,7 +150,7 @@ class CleanupTest extends TestCase {
 
 		$instance->expects($this->exactly(count($backendUsers)))
 			->method('deleteVersions')
-			->willReturnCallback(function ($user) use ($backendUsers) {
+			->willReturnCallback(function ($user) use ($backendUsers): void {
 				$this->assertTrue(in_array($user, $backendUsers));
 			});
 

@@ -389,7 +389,6 @@ OC.L10N.register(
     "Reasons to use Nextcloud in your organization" : "Priežastys, kodėl turėtumėte naudoti Nextcloud savo organizacijoje",
     "Developed by the {communityopen}Nextcloud community{linkclose}, the {githubopen}source code{linkclose} is licensed under the {licenseopen}AGPL{linkclose}." : "Sukurta {communityopen}Nextcloud bendruomenės{linkclose}, {githubopen}pirminis kodas{linkclose} yra licencijuotas pagal {licenseopen}AGPL{linkclose}.",
     "Like our Facebook page" : "Spauskite „Patinka“ mūsų „Facebook“ puslapyje",
-    "Follow us on Twitter" : "Sekite mus Twitter",
     "Follow us on Mastodon" : "Sekite mus Mastodon",
     "Check out our blog" : "Peržvelkite mūsų tinklaraštį",
     "Subscribe to our newsletter" : "Prenumeruokite mūsų naujienlaiškį",
@@ -407,6 +406,7 @@ OC.L10N.register(
     "These groups will still be able to receive shares, but not to initiate them." : "Šios grupės vis tiek galės gauti viešinius, tačiau negalės jų inicijuoti.",
     "Two-factor authentication can be enforced for all users and specific groups. If they do not have a two-factor provider configured, they will be unable to log into the system." : "Dviejų faktorių tapatybės nustatymas gali būti priverstinis visiems naudotojams ir tam tikroms grupėms. Jeigu naudotojai ar grupės neturės sukonfigūruoto dviejų faktorių teikėjo, tuomet jie negalės prisijungti prie sistemos.",
     "When groups are selected/excluded, they use the following logic to determine if a user has 2FA enforced: If no groups are selected, 2FA is enabled for everyone except members of the excluded groups. If groups are selected, 2FA is enabled for all members of these. If a user is both in a selected and excluded group, the selected takes precedence and 2FA is enforced." : "Jei nepasirinkta nė viena grupė, 2FA įjungiama visiems, išskyrus pašalintų grupių narius. Jei pasirenkamos grupės, visiems jų nariams įjungiama 2FA. Jei vartotojas yra ir pasirinktoje, ir pašalintoje grupėje,  2FA yra įjungiamas. ",
+    "{license}-licensed" : "Licencijuota pagal {license}",
     "Username" : "Naudotojo vardas",
     "Execute one task with each page loaded. Use case: Single user instance." : "Su kiekvienu įkeltu puslapiu vykdyti po vieną užduotį. Naudojimo atvejis: Egzempliorius su vienu naudotoju.",
     "cron.php is registered at a webcron service to call cron.php every 5 minutes over HTTP. Use case: Very small instance (1–5 users depending on the usage)." : "„cron.php“ yra registruojamas „webcron“ tarnyboje, kad kas 5 minutes per HTTP būtų iškviečiamas failas „cron.php“. Naudojimo atvejis: Labai mažas egzempliorius (priklausomai nuo našumo, 1–5 naudotojai).",
@@ -427,12 +427,12 @@ OC.L10N.register(
     "Show user backend" : "Rodyti naudotojo vidinę pusę",
     "Name your device" : "Pavadinkite savo įrenginį",
     "Server error while trying to add WebAuthn device" : "Serverio klaida, bandant pridėti WbAuthn įrenginį",
-    "{license}-licensed" : "Licencijuota pagal {license}",
     "by {author}\n{license}" : "pagal {author}\n{license}",
     "Active users" : "Aktyvūs naudotojai",
     "Disabled users" : "Išjungti naudotojai",
     "Not available as publishing user specific data to the lookup server is not allowed, contact your system administrator if you have any questions" : "Neprieinama, nes su naudotoju susijusios informacijos paskelbimas į paieškos serverį yra neleidžiamas. Jei turite klausimų, susisiekite su savo sistemos administratoriumi",
     "Show to logged in users only" : "Rodyti tik prisijungusiems naudotojams",
-    "SMTP Username" : "SMTP naudotojo vardas"
+    "SMTP Username" : "SMTP naudotojo vardas",
+    "Follow us on Twitter" : "Sekite mus Twitter"
 },
 "nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);");

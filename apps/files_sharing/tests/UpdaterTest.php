@@ -50,7 +50,7 @@ class UpdaterTest extends TestCase {
 	 * points should be unshared before the folder gets deleted so
 	 * that the mount point doesn't end up at the trash bin
 	 */
-	public function testDeleteParentFolder() {
+	public function testDeleteParentFolder(): void {
 		$status = \OC::$server->getAppManager()->isEnabledForUser('files_trashbin');
 		(new \OC_App())->enable('files_trashbin');
 
@@ -85,7 +85,7 @@ class UpdaterTest extends TestCase {
 
 		// share mount point should now be moved to the subfolder
 		$this->assertFalse($view->file_exists($this->folder));
-		$this->assertTrue($view->file_exists('localFolder/' .$this->folder));
+		$this->assertTrue($view->file_exists('localFolder/' . $this->folder));
 
 		$view->unlink('localFolder');
 
@@ -128,7 +128,7 @@ class UpdaterTest extends TestCase {
 	 *
 	 * @param string $shareFolder share folder to use
 	 */
-	public function testShareFile($shareFolder) {
+	public function testShareFile($shareFolder): void {
 		$config = \OC::$server->getConfig();
 		$oldShareFolder = $config->getSystemValue('share_folder');
 		$config->setSystemValue('share_folder', $shareFolder);
@@ -178,7 +178,7 @@ class UpdaterTest extends TestCase {
 	/**
 	 * if a folder gets renamed all children mount points should be renamed too
 	 */
-	public function testRename() {
+	public function testRename(): void {
 		$fileinfo = \OC\Files\Filesystem::getFileInfo($this->folder);
 
 		$share = $this->share(
@@ -225,7 +225,7 @@ class UpdaterTest extends TestCase {
 	 * 	  |-subfolder2
 	 * 	    |-file2.txt --> shared with user3
 	 */
-	public function testMovedIntoShareChangeOwner() {
+	public function testMovedIntoShareChangeOwner(): void {
 		$this->markTestSkipped('Skipped because this is failing with S3 as primary as file id are change when moved.');
 
 		// user1 creates folder1
@@ -290,7 +290,7 @@ class UpdaterTest extends TestCase {
 		);
 
 		// user2 moves folder2 into folder1
-		$viewUser2->rename($folder2, $folder1.'/'.$folder2);
+		$viewUser2->rename($folder2, $folder1 . '/' . $folder2);
 		$folder2Share = $this->shareManager->getShareById($folder2Share->getFullId());
 		$file1Share = $this->shareManager->getShareById($file1Share->getFullId());
 		$subfolder1Share = $this->shareManager->getShareById($subfolder1Share->getFullId());
@@ -308,7 +308,7 @@ class UpdaterTest extends TestCase {
 		$this->assertEquals(\OCP\Constants::PERMISSION_READ | \OCP\Constants::PERMISSION_SHARE, $file2Share->getPermissions());
 
 		// user2 moves folder2 out of folder1
-		$viewUser2->rename($folder1.'/'.$folder2, $folder2);
+		$viewUser2->rename($folder1 . '/' . $folder2, $folder2);
 		$folder2Share = $this->shareManager->getShareById($folder2Share->getFullId());
 		$file1Share = $this->shareManager->getShareById($file1Share->getFullId());
 		$subfolder1Share = $this->shareManager->getShareById($subfolder1Share->getFullId());

@@ -440,8 +440,8 @@ class GroupPluginTest extends TestCase {
 		array $exactExpected,
 		array $expected,
 		bool $reachedEnd,
-		$singleGroup
-	) {
+		$singleGroup,
+	): void {
 		$this->config->expects($this->any())
 			->method('getAppValue')
 			->willReturnCallback(

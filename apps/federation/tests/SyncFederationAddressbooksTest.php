@@ -33,7 +33,7 @@ class SyncFederationAddressbooksTest extends \Test\TestCase {
 		$this->logger = $this->createMock(LoggerInterface::class);
 	}
 
-	public function testSync() {
+	public function testSync(): void {
 		/** @var DbHandler | MockObject $dbHandler */
 		$dbHandler = $this->getMockBuilder('OCA\Federation\DbHandler')
 			->disableOriginalConstructor()
@@ -57,13 +57,13 @@ class SyncFederationAddressbooksTest extends \Test\TestCase {
 
 		/** @var \OCA\DAV\CardDAV\SyncService $syncService */
 		$s = new SyncFederationAddressBooks($dbHandler, $syncService, $this->discoveryService, $this->logger);
-		$s->syncThemAll(function ($url, $ex) {
+		$s->syncThemAll(function ($url, $ex): void {
 			$this->callBacks[] = [$url, $ex];
 		});
 		$this->assertEquals('1', count($this->callBacks));
 	}
 
-	public function testException() {
+	public function testException(): void {
 		/** @var DbHandler | MockObject $dbHandler */
 		$dbHandler = $this->getMockBuilder('OCA\Federation\DbHandler')->
 		disableOriginalConstructor()->
@@ -85,13 +85,13 @@ class SyncFederationAddressbooksTest extends \Test\TestCase {
 
 		/** @var \OCA\DAV\CardDAV\SyncService $syncService */
 		$s = new SyncFederationAddressBooks($dbHandler, $syncService, $this->discoveryService, $this->logger);
-		$s->syncThemAll(function ($url, $ex) {
+		$s->syncThemAll(function ($url, $ex): void {
 			$this->callBacks[] = [$url, $ex];
 		});
 		$this->assertEquals(2, count($this->callBacks));
 	}
 
-	public function testSuccessfulSyncWithoutChangesAfterFailure() {
+	public function testSuccessfulSyncWithoutChangesAfterFailure(): void {
 		/** @var DbHandler | MockObject $dbHandler */
 		$dbHandler = $this->getMockBuilder('OCA\Federation\DbHandler')
 			->disableOriginalConstructor()
@@ -116,7 +116,7 @@ class SyncFederationAddressbooksTest extends \Test\TestCase {
 
 		/** @var \OCA\DAV\CardDAV\SyncService $syncService */
 		$s = new SyncFederationAddressBooks($dbHandler, $syncService, $this->discoveryService, $this->logger);
-		$s->syncThemAll(function ($url, $ex) {
+		$s->syncThemAll(function ($url, $ex): void {
 			$this->callBacks[] = [$url, $ex];
 		});
 		$this->assertEquals('1', count($this->callBacks));

@@ -69,6 +69,7 @@ OC.L10N.register(
     "Custom user agent" : "Пользовательский user agent",
     "Select groups" : "Выберите группы",
     "Groups" : "Группы",
+    "Type to search for group …" : "Введите для поиска группу…",
     "Select a trigger" : "Выберите триггер",
     "At least one event must be selected" : "Необходимо выбрать как минимум одно событие",
     "Add new flow" : "Добавить обработку",
@@ -90,6 +91,7 @@ OC.L10N.register(
     "Show more" : "Показывать больше",
     "Configured flows" : "Настроенные обработки",
     "Your flows" : "Ваши обработки",
+    "No flows configured" : "Потоки не настроены",
     "matches" : "соответствует",
     "does not match" : "не соответствует",
     "is" : "равняется",
@@ -114,6 +116,7 @@ OC.L10N.register(
     "between" : "между",
     "not between" : "не между",
     "Request user agent" : "Используемое приложение (user agent)",
+    "Group membership" : "Членство в группе",
     "is member of" : "является участником",
     "is not member of" : "не является участником",
     "User group membership" : "Участие в группе пользователей"

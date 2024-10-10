@@ -10,6 +10,7 @@ namespace OCP\DB\QueryBuilder;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\Types;
 use OCP\DB\Exception;
 use OCP\DB\IResult;
 use OCP\IDBConnection;
@@ -28,7 +29,7 @@ interface IQueryBuilder {
 	/**
 	 * @since 9.0.0
 	 */
-	public const PARAM_BOOL = ParameterType::BOOLEAN;
+	public const PARAM_BOOL = Types::BOOLEAN;
 	/**
 	 * @since 9.0.0
 	 */
@@ -541,12 +542,13 @@ interface IQueryBuilder {
 	 * </code>
 	 *
 	 * @param string $fromAlias The alias that points to a from clause.
-	 * @param string $join The table name to join.
+	 * @param string|IQueryFunction $join The table name to join.
 	 * @param string $alias The alias of the join table.
 	 * @param string|ICompositeExpression|null $condition The condition for the join.
 	 *
 	 * @return $this This QueryBuilder instance.
 	 * @since 8.2.0
+	 * @since 30.0.0 Allow passing IQueryFunction as parameter for `$join` to allow join with a sub-query.
 	 *
 	 * @psalm-taint-sink sql $fromAlias
 	 * @psalm-taint-sink sql $join
@@ -1001,11 +1003,14 @@ interface IQueryBuilder {
 	public function getLastInsertId(): int;
 
 	/**
-	 * Returns the table name quoted and with database prefix as needed by the implementation
+	 * Returns the table name quoted and with database prefix as needed by the implementation.
+	 * If a query function is passed the function is casted to string,
+	 * this allows passing functions as sub-queries for join expression.
 	 *
 	 * @param string|IQueryFunction $table
 	 * @return string
 	 * @since 9.0.0
+	 * @since 24.0.0 accepts IQueryFunction as parameter
 	 */
 	public function getTableName($table);
 
@@ -1036,7 +1041,7 @@ interface IQueryBuilder {
 	 * @return $this
 	 * @since 30.0.0
 	 */
-	public function hintShardKey(string $column, mixed $value, bool $overwrite = false);
+	public function hintShardKey(string $column, mixed $value, bool $overwrite = false): self;
 
 	/**
 	 * Set the query to run across all shards if sharding is enabled.
@@ -1044,7 +1049,7 @@ interface IQueryBuilder {
 	 * @return $this
 	 * @since 30.0.0
 	 */
-	public function runAcrossAllShards();
+	public function runAcrossAllShards(): self;
 
 	/**
 	 * Get a list of column names that are expected in the query output

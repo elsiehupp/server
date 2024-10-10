@@ -10,7 +10,8 @@ namespace Test\Encryption;
 use OC\Encryption\EncryptionWrapper;
 use OC\Encryption\Manager;
 use OC\Memcache\ArrayCache;
-use OCP\Files\Storage;
+use OCP\Files\Storage\IDisableEncryptionStorage;
+use OCP\Files\Storage\IStorage;
 use Psr\Log\LoggerInterface;
 use Test\TestCase;
 
@@ -41,8 +42,8 @@ class EncryptionWrapperTest extends TestCase {
 	/**
 	 * @dataProvider provideWrapStorage
 	 */
-	public function testWrapStorage($expectedWrapped, $wrappedStorages) {
-		$storage = $this->getMockBuilder(Storage::class)
+	public function testWrapStorage($expectedWrapped, $wrappedStorages): void {
+		$storage = $this->getMockBuilder(IStorage::class)
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -74,7 +75,7 @@ class EncryptionWrapperTest extends TestCase {
 			[true, ['OCA\Files_Trashbin\Storage']],
 
 			// Do not wrap shared storages
-			[false, [Storage\IDisableEncryptionStorage::class]],
+			[false, [IDisableEncryptionStorage::class]],
 		];
 	}
 }

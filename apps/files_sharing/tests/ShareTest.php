@@ -34,7 +34,7 @@ class ShareTest extends TestCase {
 		$this->view->mkdir($this->folder);
 		$this->view->mkdir($this->folder . $this->subfolder);
 		$this->view->mkdir($this->folder . $this->subfolder . $this->subsubfolder);
-		$this->view->file_put_contents($this->folder.$this->filename, $this->data);
+		$this->view->file_put_contents($this->folder . $this->filename, $this->data);
 		$this->view->file_put_contents($this->folder . $this->subfolder . $this->filename, $this->data);
 	}
 
@@ -48,7 +48,7 @@ class ShareTest extends TestCase {
 		parent::tearDown();
 	}
 
-	public function testUnshareFromSelf() {
+	public function testUnshareFromSelf(): void {
 		$groupManager = \OC::$server->getGroupManager();
 		$userManager = \OC::$server->getUserManager();
 
@@ -103,12 +103,12 @@ class ShareTest extends TestCase {
 	public function verifyDirContent($content, $expected) {
 		foreach ($content as $c) {
 			if (!in_array($c['name'], $expected)) {
-				$this->assertTrue(false, "folder should only contain '" . implode(',', $expected) . "', found: " .$c['name']);
+				$this->assertTrue(false, "folder should only contain '" . implode(',', $expected) . "', found: " . $c['name']);
 			}
 		}
 	}
 
-	public function testShareWithDifferentShareFolder() {
+	public function testShareWithDifferentShareFolder(): void {
 		$fileinfo = $this->view->getFileInfo($this->filename);
 		$folderinfo = $this->view->getFileInfo($this->folder);
 
@@ -139,7 +139,7 @@ class ShareTest extends TestCase {
 		\OC::$server->getConfig()->deleteSystemValue('share_folder');
 	}
 
-	public function testShareWithGroupUniqueName() {
+	public function testShareWithGroupUniqueName(): void {
 		$this->markTestSkipped('TODO: Disable because fails on drone');
 
 		$this->loginHelper(self::TEST_FILES_SHARING_API_USER1);
@@ -182,7 +182,7 @@ class ShareTest extends TestCase {
 	 * shared files should never have delete permissions
 	 * @dataProvider dataProviderTestFileSharePermissions
 	 */
-	public function testFileSharePermissions($permission, $expectedvalid) {
+	public function testFileSharePermissions($permission, $expectedvalid): void {
 		$pass = true;
 		try {
 			$this->share(
@@ -215,7 +215,7 @@ class ShareTest extends TestCase {
 		];
 	}
 
-	public function testFileOwner() {
+	public function testFileOwner(): void {
 		$this->share(
 			IShare::TYPE_USER,
 			$this->filename,

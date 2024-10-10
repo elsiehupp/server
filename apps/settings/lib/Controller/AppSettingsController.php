@@ -14,7 +14,6 @@ use OC\App\AppStore\Version\VersionParser;
 use OC\App\DependencyAnalyzer;
 use OC\App\Platform;
 use OC\Installer;
-use OC_App;
 use OCP\App\AppPathNotFoundException;
 use OCP\App\IAppManager;
 use OCP\AppFramework\Controller;
@@ -106,7 +105,7 @@ class AppSettingsController extends Controller {
 	#[NoCSRFRequired]
 	public function getAppDiscoverJSON(): JSONResponse {
 		$data = $this->discoverFetcher->get(true);
-		return new JSONResponse($data);
+		return new JSONResponse(array_values($data));
 	}
 
 	/**
@@ -438,7 +437,7 @@ class AppSettingsController extends Controller {
 				'missingMaxOwnCloudVersion' => false,
 				'missingMinOwnCloudVersion' => false,
 				'canInstall' => true,
-				'screenshot' => isset($app['screenshots'][0]['url']) ? 'https://usercontent.apps.nextcloud.com/'.base64_encode($app['screenshots'][0]['url']) : '',
+				'screenshot' => isset($app['screenshots'][0]['url']) ? 'https://usercontent.apps.nextcloud.com/' . base64_encode($app['screenshots'][0]['url']) : '',
 				'score' => $app['ratingOverall'],
 				'ratingNumOverall' => $app['ratingNumOverall'],
 				'ratingNumThresholdReached' => $app['ratingNumOverall'] > 5,
@@ -479,7 +478,7 @@ class AppSettingsController extends Controller {
 			$updateRequired = false;
 
 			foreach ($appIds as $appId) {
-				$appId = OC_App::cleanAppId($appId);
+				$appId = $this->appManager->cleanAppId($appId);
 
 				// Check if app is already downloaded
 				/** @var Installer $installer */
@@ -537,7 +536,7 @@ class AppSettingsController extends Controller {
 	public function disableApps(array $appIds): JSONResponse {
 		try {
 			foreach ($appIds as $appId) {
-				$appId = OC_App::cleanAppId($appId);
+				$appId = $this->appManager->cleanAppId($appId);
 				$this->appManager->disableApp($appId);
 			}
 			return new JSONResponse([]);
@@ -553,7 +552,7 @@ class AppSettingsController extends Controller {
 	 */
 	#[PasswordConfirmationRequired]
 	public function uninstallApp(string $appId): JSONResponse {
-		$appId = OC_App::cleanAppId($appId);
+		$appId = $this->appManager->cleanAppId($appId);
 		$result = $this->installer->removeApp($appId);
 		if ($result !== false) {
 			$this->appManager->clearAppsCache();
@@ -567,7 +566,7 @@ class AppSettingsController extends Controller {
 	 * @return JSONResponse
 	 */
 	public function updateApp(string $appId): JSONResponse {
-		$appId = OC_App::cleanAppId($appId);
+		$appId = $this->appManager->cleanAppId($appId);
 
 		$this->config->setSystemValue('maintenance', true);
 		try {
@@ -594,7 +593,7 @@ class AppSettingsController extends Controller {
 	}
 
 	public function force(string $appId): JSONResponse {
-		$appId = OC_App::cleanAppId($appId);
+		$appId = $this->appManager->cleanAppId($appId);
 		$this->appManager->ignoreNextcloudRequirementForApp($appId);
 		return new JSONResponse();
 	}

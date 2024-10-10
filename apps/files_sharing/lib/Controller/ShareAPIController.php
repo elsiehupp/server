@@ -88,7 +88,7 @@ class ShareAPIController extends OCSController {
 		private LoggerInterface $logger,
 		private IProviderFactory $factory,
 		private IMailer $mailer,
-		?string $userId = null
+		?string $userId = null,
 	) {
 		parent::__construct($appName, $request);
 		$this->currentUser = $userId;
@@ -158,6 +158,27 @@ class ShareAPIController extends OCSController {
 		if ($isOwnShare) {
 			$result['item_permissions'] = $node->getPermissions();
 		}
+		
+		// If we're on the recipient side, the node permissions
+		// are bound to the share permissions. So we need to
+		// adjust the permissions to the share permissions if necessary.
+		if (!$isOwnShare) {
+			$result['item_permissions'] = $share->getPermissions();
+
+			// For some reason, single files share are forbidden to have the delete permission
+			// since we have custom methods to check those, let's adjust straight away.
+			// DAV permissions does not have that issue though.
+			if ($this->canDeleteShare($share) || $this->canDeleteShareFromSelf($share)) {
+				$result['item_permissions'] |= Constants::PERMISSION_DELETE;
+			}
+			if ($this->canEditShare($share)) {
+				$result['item_permissions'] |= Constants::PERMISSION_UPDATE;
+			}
+		}
+
+		// See MOUNT_ROOT_PROPERTYNAME dav property
+		$result['is-mount-root'] = $node->getInternalPath() === '';
+		$result['mount-type'] = $node->getMountPoint()->getMountType();
 
 		$result['mimetype'] = $node->getMimetype();
 		$result['has_preview'] = $this->previewManager->isAvailable($node);
@@ -544,7 +565,7 @@ class ShareAPIController extends OCSController {
 		string $note = '',
 		string $label = '',
 		?string $attributes = null,
-		?string $sendMail = null
+		?string $sendMail = null,
 	): DataResponse {
 		$share = $this->shareManager->newShare();
 
@@ -909,7 +930,7 @@ class ShareAPIController extends OCSController {
 		string $reshares = 'false',
 		string $subfiles = 'false',
 		string $path = '',
-		string $include_tags = 'false'
+		string $include_tags = 'false',
 	): DataResponse {
 		$node = null;
 		if ($path !== '') {
@@ -957,7 +978,7 @@ class ShareAPIController extends OCSController {
 		bool $sharedWithMe = false,
 		bool $reShares = false,
 		bool $subFiles = false,
-		bool $includeTags = false
+		bool $includeTags = false,
 	): array {
 		if ($sharedWithMe) {
 			return $this->getSharedWithMe($node, $includeTags);

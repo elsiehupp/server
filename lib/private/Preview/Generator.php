@@ -41,7 +41,7 @@ class Generator {
 		IPreview $previewManager,
 		IAppData $appData,
 		GeneratorHelper $helper,
-		IEventDispatcher $eventDispatcher
+		IEventDispatcher $eventDispatcher,
 	) {
 		$this->config = $config;
 		$this->previewManager = $previewManager;
@@ -80,6 +80,7 @@ class Generator {
 			$height,
 			$crop,
 			$mode,
+			$mimeType,
 		));
 
 		// since we only ask for one preview, and the generate method return the last one it created, it returns the one we want

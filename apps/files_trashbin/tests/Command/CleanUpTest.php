@@ -64,10 +64,10 @@ class CleanUpTest extends TestCase {
 		for ($i = 0; $i < 10; $i++) {
 			$query->insert($this->trashTable)
 				->values([
-					'id' => $query->expr()->literal('file'.$i),
+					'id' => $query->expr()->literal('file' . $i),
 					'timestamp' => $query->expr()->literal($i),
 					'location' => $query->expr()->literal('.'),
-					'user' => $query->expr()->literal('user'.$i % 2)
+					'user' => $query->expr()->literal('user' . $i % 2)
 				])->execute();
 		}
 		$getAllQuery = $this->dbConnection->getQueryBuilder();
@@ -82,7 +82,7 @@ class CleanUpTest extends TestCase {
 	 * @dataProvider dataTestRemoveDeletedFiles
 	 * @param boolean $nodeExists
 	 */
-	public function testRemoveDeletedFiles(bool $nodeExists) {
+	public function testRemoveDeletedFiles(bool $nodeExists): void {
 		$this->initTable();
 		$this->rootFolder
 			->method('nodeExists')
@@ -137,7 +137,7 @@ class CleanUpTest extends TestCase {
 	/**
 	 * test remove deleted files from users given as parameter
 	 */
-	public function testExecuteDeleteListOfUsers() {
+	public function testExecuteDeleteListOfUsers(): void {
 		$userIds = ['user1', 'user2', 'user3'];
 		$instance = $this->getMockBuilder('OCA\Files_Trashbin\Command\CleanUp')
 			->setMethods(['removeDeletedFiles'])
@@ -145,7 +145,7 @@ class CleanUpTest extends TestCase {
 			->getMock();
 		$instance->expects($this->exactly(count($userIds)))
 			->method('removeDeletedFiles')
-			->willReturnCallback(function ($user) use ($userIds) {
+			->willReturnCallback(function ($user) use ($userIds): void {
 				$this->assertTrue(in_array($user, $userIds));
 			});
 		$this->userManager->expects($this->exactly(count($userIds)))
@@ -168,7 +168,7 @@ class CleanUpTest extends TestCase {
 	/**
 	 * test remove deleted files of all users
 	 */
-	public function testExecuteAllUsers() {
+	public function testExecuteAllUsers(): void {
 		$userIds = [];
 		$backendUsers = ['user1', 'user2'];
 		$instance = $this->getMockBuilder('OCA\Files_Trashbin\Command\CleanUp')
@@ -181,7 +181,7 @@ class CleanUpTest extends TestCase {
 			->willReturn($backendUsers);
 		$instance->expects($this->exactly(count($backendUsers)))
 			->method('removeDeletedFiles')
-			->willReturnCallback(function ($user) use ($backendUsers) {
+			->willReturnCallback(function ($user) use ($backendUsers): void {
 				$this->assertTrue(in_array($user, $backendUsers));
 			});
 		$inputInterface = $this->createMock(InputInterface::class);
@@ -200,7 +200,7 @@ class CleanUpTest extends TestCase {
 		$this->invokePrivate($instance, 'execute', [$inputInterface, $outputInterface]);
 	}
 
-	public function testExecuteNoUsersAndNoAllUsers() {
+	public function testExecuteNoUsersAndNoAllUsers(): void {
 		$inputInterface = $this->createMock(InputInterface::class);
 		$inputInterface->method('getArgument')
 			->with('user_id')
@@ -218,7 +218,7 @@ class CleanUpTest extends TestCase {
 		$this->invokePrivate($this->cleanup, 'execute', [$inputInterface, $outputInterface]);
 	}
 
-	public function testExecuteUsersAndAllUsers() {
+	public function testExecuteUsersAndAllUsers(): void {
 		$inputInterface = $this->createMock(InputInterface::class);
 		$inputInterface->method('getArgument')
 			->with('user_id')
